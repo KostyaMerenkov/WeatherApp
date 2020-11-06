@@ -1,35 +1,49 @@
 package com.weatherapp;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
-import android.widget.TextView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
+import android.widget.EditText;
+import android.widget.MultiAutoCompleteTextView;
 import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity {
+import java.util.Arrays;
+import java.util.List;
 
-    private static final boolean DEBUG = true;
-    public final static String TAG = "MainApp";
-    private int temperature = 16;
-    private TextView tempTextView;
+public class Choose_city extends AppCompatActivity {
+
+    public final static String EXTRA_MESSAGE = "CITY";
+    public final static String TAG = "CHOOSE_CITY";
+    private final static boolean DEBUG = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        Intent intent = getIntent();
-        String message = intent.getStringExtra(Choose_city.EXTRA_MESSAGE);
-        TextView city = (TextView) findViewById(R.id.textView2);
-        city.setText(message);
-        tempTextView = findViewById(R.id.textView2);
+        setContentView(R.layout.activity_choose_city);
+        AutoCompleteTextView editText = findViewById(R.id.actv);
+        editText.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                editText.showDropDown();
+                editText.requestFocus();
+                return false;
+            }
+        });
+        String[] cities = getResources().getStringArray(R.array.cities);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_list_item_1, cities);
+        editText.setAdapter(adapter);
         if (DEBUG) {
             Toast.makeText(getApplicationContext(), "onCreate()", Toast.LENGTH_SHORT).show();
             detectOrientation();
@@ -72,17 +86,19 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle outState, @NonNull PersistableBundle outPersistentState) {
-        super.onSaveInstanceState(outState, outPersistentState);
-        outState.putInt("Temp", temperature);
-    }
-
-    @Override
-    public void onRestoreInstanceState(@Nullable Bundle savedInstanceState, @Nullable PersistableBundle persistentState) {
-        super.onRestoreInstanceState(savedInstanceState, persistentState);
-        temperature = savedInstanceState.getInt("Temp");
-        tempTextView.setText(((Integer)temperature).toString());
+    public void weather(View view) {
+        // действия, совершаемые после нажатия на кнопку
+        // Создаем объект Intent для вызова новой Activity
+        Intent intent = new Intent(this, MainActivity.class);
+        // Получаем текстовое поле в текущей Activity
+        EditText editText = (EditText) findViewById(R.id.actv);
+        // Получае текст данного текстового поля
+        String message = editText.getText().toString();
+        // Добавляем с помощью свойства putExtra объект - первый параметр - ключ,
+        // второй параметр - значение этого объекта
+        intent.putExtra(EXTRA_MESSAGE, message);
+        // запуск activity
+        startActivity(intent);
     }
 
     public void detectOrientation() {

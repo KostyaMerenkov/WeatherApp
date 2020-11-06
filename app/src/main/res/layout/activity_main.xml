@@ -8,8 +8,8 @@
 
     <TextView
         android:id="@+id/textView"
-        android:layout_width="@dimen/temperature_now_w"
-        android:layout_height="@dimen/temperature_now_h"
+        android:layout_width="149dp"
+        android:layout_height="113dp"
         android:layout_marginStart="32dp"
         android:layout_marginTop="12dp"
         android:text="@string/temperature"
@@ -19,8 +19,8 @@
 
     <TextView
         android:id="@+id/textView2"
-        android:layout_width="@dimen/city_w"
-        android:layout_height="@dimen/city_h"
+        android:layout_width="230dp"
+        android:layout_height="23dp"
         android:text="@string/city"
         android:textAlignment="center"
         android:textSize="@dimen/city"

@@ -1,7 +1,32 @@
 <resources>
+    <!-- Main app -->
     <string name="app_name">WeatherApp</string>
     <string name="temperature">Температура</string>
     <string name="rain_info">Информация о дожде</string>
     <string name="today_info">Информация</string>
     <string name="city">Город</string>
+    <string name="greeting">Добро пожаловать!</string>
+    <string name="choose_city">Выберите город:</string>
+    <string name="confirm">Подтвердить</string>
+    <string name="your_city">Ваш город</string>
+    <string name="actv">AutoCompleteTextView</string>
+    <string name="select_city">Выберите город</string>
+
+    <!-- Greeting app -->
+    <string-array name="cities">
+        <item>Москва</item>
+        <item>Санкт-Петербург</item>
+        <item>Новосибирск</item>
+        <item>Екатеринбург</item>
+        <item>Казань</item>
+        <item>Нижний Новгород</item>
+        <item>Челябинск</item>
+        <item>Омск</item>
+        <item>Ростов-на-Дону</item>
+        <item>Уфа</item>
+        <item>Красноярск</item>
+        <item>Воронеж</item>
+        <item>Пермь</item>
+        <item>Волгоград</item>
+    </string-array>
 </resources>
