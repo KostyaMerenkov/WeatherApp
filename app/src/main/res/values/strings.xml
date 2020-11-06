@@ -11,6 +11,7 @@
     <string name="your_city">Ваш город</string>
     <string name="actv">AutoCompleteTextView</string>
     <string name="select_city">Выберите город</string>
+    <string name="button_date">Дата</string>
 
     <!-- Greeting app -->
     <string-array name="cities">

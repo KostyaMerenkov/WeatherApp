@@ -1,31 +1,30 @@
 package com.weatherapp;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
-import android.widget.MultiAutoCompleteTextView;
 import android.widget.Toast;
 
-import java.util.Arrays;
-import java.util.List;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 public class Choose_city extends AppCompatActivity {
 
-    public final static String EXTRA_MESSAGE = "CITY";
+    public final static String CITY_MESSAGE = "CITY";
+    public final static String DATE_MESSAGE = "DATE";
+    public final static String TEMP_MESSAGE = "TEMPERATURE";
     public final static String TAG = "CHOOSE_CITY";
-    private final static boolean DEBUG = true;
+    private final static boolean DEBUG = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,11 +91,16 @@ public class Choose_city extends AppCompatActivity {
         Intent intent = new Intent(this, MainActivity.class);
         // Получаем текстовое поле в текущей Activity
         EditText editText = (EditText) findViewById(R.id.actv);
-        // Получае текст данного текстового поля
+        // Получаем текст данного текстового поля
         String message = editText.getText().toString();
+        DateFormat df = new SimpleDateFormat("EEE, MMM d");
+        String date = df.format(Calendar.getInstance().getTime());
         // Добавляем с помощью свойства putExtra объект - первый параметр - ключ,
         // второй параметр - значение этого объекта
-        intent.putExtra(EXTRA_MESSAGE, message);
+        String temperature = "4";
+        intent.putExtra(DATE_MESSAGE, date);
+        intent.putExtra(CITY_MESSAGE, message);
+        intent.putExtra(TEMP_MESSAGE, temperature);
         // запуск activity
         startActivity(intent);
     }
