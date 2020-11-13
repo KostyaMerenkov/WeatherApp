@@ -23,7 +23,6 @@ import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final boolean DEBUG = false;
     public final static String TAG = "MainApp";
     private int temperature = 16;
     private TextView tempTextView;
@@ -33,16 +32,16 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Intent intent = getIntent();
-        String message = intent.getStringExtra(Choose_city.CITY_MESSAGE);
-        String date = intent.getStringExtra(Choose_city.DATE_MESSAGE);
+        String message = intent.getStringExtra(Constants.CITY_MESSAGE);
+        String date = intent.getStringExtra(Constants.DATE_MESSAGE);
         TextView city = (TextView) findViewById(R.id.textView2);
         TextView temperature = findViewById(R.id.textView);
-        temperature.setText(intent.getStringExtra(Choose_city.TEMP_MESSAGE) + "°");
+        temperature.setText(intent.getStringExtra(Constants.TEMP_MESSAGE) + "°");
         Button date_button = findViewById(R.id.button2);
         date_button.setText(date);
         city.setText(message);
         tempTextView = findViewById(R.id.textView2);
-        if (DEBUG) {
+        if (Constants.DEBUG) {
             Toast.makeText(getApplicationContext(), "onCreate()", Toast.LENGTH_SHORT).show();
             detectOrientation();
         }
@@ -51,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        if (DEBUG) {
+        if (Constants.DEBUG) {
             Toast.makeText(getApplicationContext(), "onPause()", Toast.LENGTH_SHORT).show();
             Log.d(TAG, "onPause()");
         }
@@ -60,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onRestart() {
         super.onRestart();
-        if (DEBUG) {
+        if (Constants.DEBUG) {
             Toast.makeText(getApplicationContext(), "onRestart()", Toast.LENGTH_SHORT).show();
             Log.d(TAG, "onRestart()");
         }
@@ -69,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if (DEBUG) {
+        if (Constants.DEBUG) {
             Toast.makeText(getApplicationContext(), "onResume()", Toast.LENGTH_SHORT).show();
             Log.d(TAG, "onResume()");
         }
@@ -78,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (DEBUG) {
+        if (Constants.DEBUG) {
             Toast.makeText(getApplicationContext(), "onDestroy()", Toast.LENGTH_SHORT).show();
             Log.d(TAG, "onDestroy()");
         }

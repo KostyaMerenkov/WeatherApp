@@ -12,22 +12,28 @@
     <string name="actv">AutoCompleteTextView</string>
     <string name="select_city">Выберите город</string>
     <string name="button_date">Дата</string>
+    <string name="background">bg</string>
 
     <!-- Greeting app -->
     <string-array name="cities">
-        <item>Москва</item>
-        <item>Санкт-Петербург</item>
-        <item>Новосибирск</item>
-        <item>Екатеринбург</item>
-        <item>Казань</item>
-        <item>Нижний Новгород</item>
-        <item>Челябинск</item>
-        <item>Омск</item>
-        <item>Ростов-на-Дону</item>
-        <item>Уфа</item>
-        <item>Красноярск</item>
-        <item>Воронеж</item>
-        <item>Пермь</item>
-        <item>Волгоград</item>
+        <item><string name="Moscow">Москва</string> </item>
+        <item><string name="Saint-petersburg">Санкт-Петербург</string> </item>
+        <item><string name="Novosibirsk">Новосибирск</string> </item>
+        <item><string name="Ekaterinburg">Екатеринбург</string> </item>
+        <item><string name="Kazan">Казань</string> </item>
+        <item><string name="Nizhniy novgorod">Нижний Новгород</string> </item>
+        <item><string name="Chelyabinsk">Челябинск</string> </item>
+        <item><string name="Omsk">Омск</string> </item>
+        <item><string name="Rostov">Ростов-на-Дону</string> </item>
+        <item><string name="Ufa">Уфа</string> </item>
+        <item><string name="Krasnoyarsk">Красноярск</string> </item>
+        <item><string name="Voronezh">Воронеж</string> </item>
+        <item><string name="Perm'">Пермь</string> </item>
+        <item><string name="Volgograd">Волгоград</string> </item>
     </string-array>
+
+    <!--    Fragment-->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="fragment_temp">Temp</string>
+    <string name="fragment_city">City</string>
 </resources>
