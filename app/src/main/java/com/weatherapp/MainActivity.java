@@ -3,6 +3,8 @@ package com.weatherapp;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
 import android.content.Intent;
@@ -13,13 +15,8 @@ import android.os.PersistableBundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -34,13 +31,20 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = getIntent();
         String message = intent.getStringExtra(Constants.CITY_MESSAGE);
         String date = intent.getStringExtra(Constants.DATE_MESSAGE);
-        TextView city = (TextView) findViewById(R.id.textView2);
-        TextView temperature = findViewById(R.id.textView);
+        TextView city = (TextView) findViewById(R.id.city_textView);
+        TextView temperature = findViewById(R.id.main_tempView);
         temperature.setText(intent.getStringExtra(Constants.TEMP_MESSAGE) + "°");
-        Button date_button = findViewById(R.id.button2);
+        Button date_button = findViewById(R.id.date_button);
         date_button.setText(date);
         city.setText(message);
-        tempTextView = findViewById(R.id.textView2);
+        tempTextView = findViewById(R.id.city_textView);
+
+        //RecyclerView
+        String[] rv_temp = {"+12", "+16", "+13"};
+        String[] rv_date = getResources().getStringArray(R.array.rv_days);
+        initRecyclerView(rv_temp, rv_date);
+
+
         if (Constants.DEBUG) {
             Toast.makeText(getApplicationContext(), "onCreate()", Toast.LENGTH_SHORT).show();
             detectOrientation();
@@ -108,6 +112,22 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG, "Альбомная ориентация");
         }
     }
+
+    private void initRecyclerView(String[] tempSource, String[] dateSource){
+        RecyclerView recyclerView = findViewById(R.id.recycler_view);
+
+        // Эта установка служит для повышения производительности системы
+        recyclerView.setHasFixedSize(true);
+
+        // Будем работать со встроенным менеджером
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
+
+        // Установим адаптер
+        SocnetAdapter adapter = new SocnetAdapter(tempSource, dateSource);
+        recyclerView.setAdapter(adapter);
+    }
+
 
     public void date_info(View view) {
         Uri address = Uri.parse("https://www.calend.ru/narod/");

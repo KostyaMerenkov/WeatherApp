@@ -36,4 +36,15 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="fragment_temp">Temp</string>
     <string name="fragment_city">City</string>
+    <string name="rv_date">rv_date</string>
+    <string name="rv_temp">rv_temp</string>
+    <string name="weather_cloud">weather_cloud</string>
+
+    <!-- Recycler View -->
+    <string-array name="rv_days">
+        <item><string name="Yesterday">Вчера</string> </item>
+        <item><string name="Today">Сегодня</string> </item>
+        <item><string name="Tomorrow">Завтра</string> </item>
+    </string-array>
+
 </resources>

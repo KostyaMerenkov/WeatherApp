@@ -45,7 +45,7 @@ public class Choose_city extends AppCompatActivity {
                     }
                     InputMethodManager in = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                     in.hideSoftInputFromWindow(editText.getApplicationWindowToken(),InputMethodManager.HIDE_NOT_ALWAYS);
-                    putFragment(findViewById(R.id.actv));
+                    //putFragment(findViewById(R.id.actv));
                     return true;
 
                 }

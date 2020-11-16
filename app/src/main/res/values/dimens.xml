@@ -15,7 +15,23 @@
     <dimen name="greeting_marginTop">100dp</dimen>
     <dimen name="fragment_city">25sp</dimen>
     <dimen name="fragment_temp">75sp</dimen>
-
-    <!-- Weather now -->
+    <dimen name="recyclerView_marginTop">5dp</dimen>
+    <dimen name="tempItemList">35sp</dimen>
+    <dimen name="dateItemList">20sp</dimen>
+    <dimen name="rv_date">150dp</dimen>
+    <dimen name="rv_imagewidth">130dp</dimen>
+    <dimen name="rv_datewidth">225dp</dimen>
+    <dimen name="rv_tempheight">60dp</dimen>
+    <dimen name="rv_tempwidth">200dp</dimen>
+    <dimen name="date_buttonWidth">120dp</dimen>
+    <dimen name="date_buttonHeight">40dp</dimen>
+    <dimen name="infoWidth">135dp</dimen>
+    <dimen name="infoHeight">25dp</dimen>
+    <dimen name="cityWidth">200dp</dimen>
+    <dimen name="cityHeight">30dp</dimen>
+    <dimen name="tempWidth">150dp</dimen>
+    <dimen name="tempHeight">100dp</dimen>
+    <dimen name="temp_marginStart">45dp</dimen>
+    <dimen name="temp_marginTop">10dp</dimen>
 
 </resources>
