@@ -3,6 +3,7 @@ package com.weatherapp;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -40,9 +41,13 @@ public class MainActivity extends AppCompatActivity {
         tempTextView = findViewById(R.id.city_textView);
 
         //RecyclerView
-        String[] rv_temp = {"+12", "+16", "+13"};
-        String[] rv_date = getResources().getStringArray(R.array.rv_days);
-        initRecyclerView(rv_temp, rv_date);
+
+        // строим источник данных
+        SocialDataSource sourceData = new SocSourceBuilder()
+                .setResources(getResources())
+                .build();
+        initRecyclerView(sourceData);
+
 
 
         if (Constants.DEBUG) {
@@ -113,19 +118,39 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void initRecyclerView(String[] tempSource, String[] dateSource){
+    private void initRecyclerView(SocialDataSource sourceData){
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
 
         // Эта установка служит для повышения производительности системы
         recyclerView.setHasFixedSize(true);
+
+        // Добавим разделитель карточек
+        DividerItemDecoration itemDecoration = new DividerItemDecoration(this,  LinearLayoutManager.HORIZONTAL);
+        itemDecoration.setDrawable(getDrawable(R.drawable.separator));
+        recyclerView.addItemDecoration(itemDecoration);
+
 
         // Будем работать со встроенным менеджером
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 
         // Установим адаптер
-        SocnetAdapter adapter = new SocnetAdapter(tempSource, dateSource);
+        SocnetAdapter adapter = new SocnetAdapter(sourceData);
         recyclerView.setAdapter(adapter);
+
+
+        if (Constants.DEBUG) {
+            // Установим слушателя
+            adapter.SetOnItemClickListener(new SocnetAdapter.OnItemClickListener() {
+                @Override
+                public void onItemClick(View view, int position) {
+
+                    Toast.makeText(MainActivity.this, String.format("Позиция - %d", position), Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+
+
     }
 
 

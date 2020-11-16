@@ -47,4 +47,16 @@
         <item><string name="Tomorrow">Завтра</string> </item>
     </string-array>
 
+    <string-array name="rv_temp">
+        <item><string name="+18">+18</string> </item>
+        <item><string name="+14">+14</string> </item>
+        <item><string name="+16">+16</string> </item>
+    </string-array>
+
+    <array name="pictures">
+            <item>@drawable/ic_cloudy</item>
+            <item>@drawable/ic_day_clear</item>
+            <item>@drawable/ic_day_rain</item>
+        </array>
+
 </resources>

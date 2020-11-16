@@ -19,14 +19,14 @@
 
     <ImageView
 
-        android:id="@+id/imageView2"
+        android:id="@+id/rv_image"
         android:layout_width="@dimen/rv_imagewidth"
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:adjustViewBounds="true"
         android:contentDescription="@string/weather_cloud"
         android:cropToPadding="true"
-        app:srcCompat="@drawable/ic_cloud" />
+        app:srcCompat="@drawable/ic_cloudy" />
 
     <TextView
         android:id="@+id/textTemp"
