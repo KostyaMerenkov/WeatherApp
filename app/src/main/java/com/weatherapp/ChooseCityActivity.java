@@ -8,6 +8,7 @@ import androidx.fragment.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -21,11 +22,13 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
-public class Choose_city extends AppCompatActivity {
+public class ChooseCityActivity extends AppCompatActivity {
 
     public final static String TAG = "CHOOSE_CITY";
     Boolean isExistChooseCityFragment = false;
@@ -45,7 +48,7 @@ public class Choose_city extends AppCompatActivity {
                     }
                     InputMethodManager in = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                     in.hideSoftInputFromWindow(editText.getApplicationWindowToken(),InputMethodManager.HIDE_NOT_ALWAYS);
-                    //putFragment(findViewById(R.id.actv));
+                    if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) putFragment(findViewById(R.id.actv));
                     return true;
 
                 }
