@@ -35,5 +35,8 @@
     <dimen name="temp_marginTop">10dp</dimen>
     <dimen name="info_width">182dp</dimen>
     <dimen name="info_height">25dp</dimen>
+    <dimen name="error_size">28sp</dimen>
+    <dimen name="error_width">328dp</dimen>
+    <dimen name="error_height">133dp</dimen>
 
 </resources>

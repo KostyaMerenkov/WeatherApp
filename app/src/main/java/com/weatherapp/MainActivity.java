@@ -20,6 +20,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,6 +35,9 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.stream.Collectors;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -62,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Intent intent = getIntent();
         String message = intent.getStringExtra(Constants.CITY_MESSAGE);
-        Snackbar.make(findViewById(R.id.main_tempView), "Вы выбрали: " + message, Snackbar.LENGTH_LONG).show();
+        Snackbar.make(findViewById(R.id.constraintLayout), "Вы выбрали: " + message, Snackbar.LENGTH_LONG).show();
         getWeather();
         String date = intent.getStringExtra(Constants.DATE_MESSAGE);
         Button date_button = findViewById(R.id.date_button);
@@ -129,6 +133,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void setError() {
         Snackbar.make(findViewById(R.id.main_tempView), "Ошибка подключения к серверу", Snackbar.LENGTH_LONG).show();
+        startError(findViewById(R.id.constraintLayout));
     }
 
     private void setWeather(WeatherRequest weatherRequest) {
@@ -278,6 +283,12 @@ public class MainActivity extends AppCompatActivity {
         // действия, совершаемые после нажатия на кнопку
         // Создаем объект Intent для вызова новой Activity
         Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
+    }
+
+    public void startError(View view) {
+        Intent intent = new Intent(this, ErrorActivity.class);
+        // запуск activity
         startActivity(intent);
     }
 

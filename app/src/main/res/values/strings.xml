@@ -77,5 +77,6 @@
     <string name="black_mode">Полностью черный режим</string>
     <string name="dark_mode_summary_off">Если темная тема недостаточно темная</string>
     <string name="dark_mode_summary_on">Выключить абсолютно черный режим</string>
+    <string name="error_connecting">Ошибка подключения к серверу</string>
 
 </resources>
