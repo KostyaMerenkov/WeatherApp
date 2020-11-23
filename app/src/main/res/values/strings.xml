@@ -2,7 +2,7 @@
     <!-- Main app -->
     <string name="app_name">WeatherApp</string>
     <string name="temperature">Температура</string>
-    <string name="rain_info">Информация о дожде</string>
+    <string name="clouds_info">Облачность</string>
     <string name="today_info">Информация</string>
     <string name="city">Город</string>
     <string name="greeting">Добро пожаловать!</string>
