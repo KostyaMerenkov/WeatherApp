@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_weather_now"
+            android:icon="@android:drawable/ic_menu_mylocation"
+            android:title="@string/menu_weather_now" />
+        <item
+            android:id="@+id/nav_choose_city"
+            android:icon="@android:drawable/ic_menu_add"
+            android:title="@string/menu_choose_city" />
+        <item
+            android:id="@+id/nav_settings"
+            android:icon="@android:drawable/ic_menu_edit"
+            android:title="@string/menu_settings" />
+    </group>
+
+    <item android:title="@string/info">
+        <menu>
+            <item
+                android:id="@+id/nav_dev_info"
+                android:icon="@android:drawable/ic_menu_info_details"
+                android:title="@string/menu_developer_info" />
+            <item
+                android:id="@+id/nav_help"
+                android:icon="@android:drawable/ic_menu_help"
+                android:title="@string/menu_help" />
+
+        </menu>
+
+    </item>
+</menu>

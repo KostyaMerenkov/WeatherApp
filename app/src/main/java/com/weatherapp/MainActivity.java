@@ -2,8 +2,11 @@ package com.weatherapp;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -12,6 +15,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.PersistableBundle;
@@ -25,6 +29,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 import com.weatherapp.weatherData.Clouds;
@@ -42,14 +47,13 @@ import java.util.stream.Collectors;
 
 import javax.net.ssl.HttpsURLConnection;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     public final static String TAG = "MainApp";
     private TextView tempTextView;
 
 
     private static final String WEATHER_URL = "https://api.openweathermap.org/data/2.5/weather?lat=55.75&lon=37.62&appid=";
-    private static final String WEATHER_API_KEY = "693d8658c32d12938d21bc45b8e467ae";
 
     private TextView city;
     private TextView temperature;
@@ -72,8 +76,8 @@ public class MainActivity extends AppCompatActivity {
         Button date_button = findViewById(R.id.date_button);
         date_button.setText(date);
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        Toolbar toolbar = initToolbar();
+        initDrawer(toolbar);
 
         //RecyclerView
         // строим источник данных
@@ -89,10 +93,16 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private Toolbar initToolbar() {
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        return toolbar;
+    }
+
     private void getWeather() {
         Weather weather = new Weather();
         try {
-            final URL uri = new URL(WEATHER_URL + WEATHER_API_KEY);
+            final URL uri = new URL(WEATHER_URL + BuildConfig.WEATHER_API_KEY);
             final Handler handler = new Handler(); // Запоминаем основной поток
             new Thread(new Runnable() {
                 public void run() {
@@ -128,12 +138,10 @@ public class MainActivity extends AppCompatActivity {
             Log.e(TAG, "Fail URI", e);
             e.printStackTrace();
         }
-
     }
 
     private void setError() {
         Snackbar.make(findViewById(R.id.main_tempView), "Ошибка подключения к серверу", Snackbar.LENGTH_LONG).show();
-        startError(findViewById(R.id.constraintLayout));
     }
 
     private void setWeather(WeatherRequest weatherRequest) {
@@ -145,10 +153,20 @@ public class MainActivity extends AppCompatActivity {
         Toolbar city = findViewById(R.id.toolbar);
         city.setTitle(weatherRequest.getName());
         temperature.setText(String.format("%d + \"°\"", (int) weatherRequest.getMain().getTemp()-273));
-        pressure.setText(String.format("Атмосферное давление: %dмм", weatherRequest.getMain().getPressure()));
-        humidity.setText(String.format("Влажность: %d", weatherRequest.getMain().getHumidity())+"%");
-        windSpeed.setText(String.format("Скорость ветра: %d м/c", weatherRequest.getWind().getSpeed()));
+        pressure.setText(String.format(getString(R.string.pressure), weatherRequest.getMain().getPressure()));
+        humidity.setText(String.format(getString(R.string.humidity), weatherRequest.getMain().getHumidity())+"%");
+        windSpeed.setText(String.format(getString(R.string.wind), weatherRequest.getWind().getSpeed()));
         clouds.setText(weatherRequest.getWeather()[0].getDescription());
+    }
+
+    private void initDrawer(Toolbar toolbar) {
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
+        navigationView.setNavigationItemSelectedListener(this);
     }
 
     private String getLines(BufferedReader in) {
@@ -273,6 +291,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
     public void date_info(View view) {
         Uri address = Uri.parse("https://www.calend.ru/narod/");
         Intent linkInet = new Intent(Intent.ACTION_VIEW, address);
@@ -286,10 +305,32 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public void startError(View view) {
-        Intent intent = new Intent(this, ErrorActivity.class);
-        // запуск activity
-        startActivity(intent);
-    }
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
 
+        switch (id) {
+            case R.id.nav_weather_now:
+                //TODO:
+                break;
+            case R.id.nav_choose_city:
+                Intent intent = new Intent(this, ChooseCityActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.nav_settings:
+                startSettings(this.tempTextView);
+                break;
+            case R.id.nav_dev_info:
+                //TODO:
+                break;
+            case R.id.nav_help:
+                //TODO:
+                break;
+
+        }
+
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
+    }
 }
