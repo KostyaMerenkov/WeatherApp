@@ -3,6 +3,7 @@ package com.weatherapp;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
@@ -12,27 +13,25 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.PersistableBundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
-import com.weatherapp.weatherData.Clouds;
 import com.weatherapp.weatherData.Weather;
 import com.weatherapp.weatherData.WeatherRequest;
 
@@ -40,9 +39,6 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.stream.Collectors;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -125,7 +121,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         });
                     } catch (Exception e) {
                         Log.e(TAG, "Fail connection", e);
-                        setError();
+                        setConnectionTimeout();
                         e.printStackTrace();
                     } finally {
                         if (null != urlConnection) {
@@ -140,8 +136,45 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    private void setError() {
-        Snackbar.make(findViewById(R.id.main_tempView), "Ошибка подключения к серверу", Snackbar.LENGTH_LONG).show();
+    private void setConnectionTimeout() {
+        Looper.prepare();
+        //Snackbar.make(findViewById(R.id.main_tempView), "Ошибка подключения к серверу", Snackbar.LENGTH_LONG).show();
+        // Создаём билдер и передаём контекст приложения
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        // В билдере указываем заголовок окна (можно указывать как ресурс,
+        // так и строку)
+        builder.setTitle(R.string.server_error)
+                // Указываем сообщение в окне (также есть вариант со
+                // строковым параметром)
+                .setMessage(R.string.try_again)
+                // Можно указать и пиктограмму
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                // Из этого окна нельзя выйти кнопкой Back
+                .setCancelable(false)
+                // Устанавливаем кнопку (название кнопки также можно
+                // задавать строкой)
+                .setPositiveButton(R.string.button_yes,
+                        // Ставим слушатель, нажатие будем обрабатывать
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                MainActivity.this.runOnUiThread(new Runnable()
+                                {
+                                    public void run()
+                                    {
+                                        getWeather();
+                                    }
+                                });
+                            }
+                        }).setNegativeButton(R.string.button_no, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        AlertDialog alert = builder.create();
+        alert.show();
+        Looper.loop();
+
     }
 
     private void setWeather(WeatherRequest weatherRequest) {
