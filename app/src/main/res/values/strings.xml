@@ -20,24 +20,6 @@
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
 
-    <!-- Greeting app -->
-    <string-array name="cities">
-        <item><string name="Moscow">Москва</string> </item>
-        <item><string name="Saint-petersburg">Санкт-Петербург</string> </item>
-        <item><string name="Novosibirsk">Новосибирск</string> </item>
-        <item><string name="Ekaterinburg">Екатеринбург</string> </item>
-        <item><string name="Kazan">Казань</string> </item>
-        <item><string name="Nizhniy novgorod">Нижний Новгород</string> </item>
-        <item><string name="Chelyabinsk">Челябинск</string> </item>
-        <item><string name="Omsk">Омск</string> </item>
-        <item><string name="Rostov">Ростов-на-Дону</string> </item>
-        <item><string name="Ufa">Уфа</string> </item>
-        <item><string name="Krasnoyarsk">Красноярск</string> </item>
-        <item><string name="Voronezh">Воронеж</string> </item>
-        <item><string name="Perm'">Пермь</string> </item>
-        <item><string name="Volgograd">Волгоград</string> </item>
-    </string-array>
-
     <!--    Fragment-->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="fragment_temp">Temp</string>
@@ -108,8 +90,11 @@
     <string name="menu_choose_city">Выбрать город</string>
     <string name="menu_settings">Настройки</string>
     <string name="server_error">Ошибка подключения к серверу!</string>
-    <string name="try_again">Повторить попытку?</string>
+    <string name="try_again_question">Повторить попытку?</string>
+    <string name="try_again">Повторите попытку</string>
     <string name="button_yes">Да</string>
     <string name="button_no">Нет</string>
+    <string name="city_not_found">Невозможно найти город!</string>
+    <string name="button_ok">Продолжить</string>
 
 </resources>

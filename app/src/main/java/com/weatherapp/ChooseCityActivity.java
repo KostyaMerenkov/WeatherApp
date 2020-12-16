@@ -1,11 +1,13 @@
 package com.weatherapp;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.drawable.GradientDrawable;
@@ -26,35 +28,21 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 
 public class ChooseCityActivity extends AppCompatActivity {
 
     public final static String TAG = "CHOOSE_CITY";
     private Boolean isExistChooseCityFragment = false;
+    private String[] cities;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_choose_city);
         AutoCompleteTextView editText = findViewById(R.id.actv);
-        editText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if ((event != null && (event.getKeyCode() == KeyEvent.KEYCODE_ENTER))
-                        || (actionId == EditorInfo.IME_ACTION_DONE)) {
-                    if(Constants.DEBUG){
-                        Toast.makeText(getApplicationContext(), "Нажата кнопка ENTER", Toast.LENGTH_SHORT).show();
-                    }
-                    InputMethodManager in = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                    in.hideSoftInputFromWindow(editText.getApplicationWindowToken(),InputMethodManager.HIDE_NOT_ALWAYS);
-                    if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) putFragment(findViewById(R.id.actv));
-                    return true;
-
-                }
-                return false;
-            }
-        });
         editText.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -63,10 +51,31 @@ public class ChooseCityActivity extends AppCompatActivity {
                 return false;
             }
         });
-        String[] cities = getResources().getStringArray(R.array.cities);
+        cities = getResources().getStringArray(R.array.cities);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_list_item_1, cities);
         editText.setAdapter(adapter);
+        editText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if ((event != null && (event.getKeyCode() == KeyEvent.KEYCODE_SEARCH))
+                        || (actionId == EditorInfo.IME_ACTION_SEARCH)) {
+                    if(Constants.DEBUG){
+                        Toast.makeText(getApplicationContext(), "Нажата кнопка SEARCH", Toast.LENGTH_SHORT).show();
+                    }
+                    InputMethodManager in = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    in.hideSoftInputFromWindow(editText.getApplicationWindowToken(),InputMethodManager.HIDE_NOT_ALWAYS);
+                    if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) putFragment(findViewById(R.id.actv));
+                    else {
+                        weather(editText);
+                    }
+                    return true;
+
+                }
+                return false;
+            }
+        });
+
         if (Constants.DEBUG) {
             Toast.makeText(getApplicationContext(), "onCreate()", Toast.LENGTH_SHORT).show();
             detectOrientation();
@@ -111,23 +120,56 @@ public class ChooseCityActivity extends AppCompatActivity {
     }
 
     public void weather(View view) {
-        // действия, совершаемые после нажатия на кнопку
-        // Создаем объект Intent для вызова новой Activity
-        Intent intent = new Intent(this, MainActivity.class);
+
         // Получаем текстовое поле в текущей Activity
         EditText editText = (EditText) findViewById(R.id.actv);
         // Получаем текст данного текстового поля
-        String message = editText.getText().toString();
-        DateFormat df = new SimpleDateFormat("EEE, MMM d");
-        String date = df.format(Calendar.getInstance().getTime());
-        // Добавляем с помощью свойства putExtra объект - первый параметр - ключ,
-        // второй параметр - значение этого объекта
-        String temperature = "4";
-        intent.putExtra(Constants.DATE_MESSAGE, date);
-        intent.putExtra(Constants.CITY_MESSAGE, message);
-        intent.putExtra(Constants.TEMP_MESSAGE, temperature);
-        // запуск activity
-        startActivity(intent);
+        String message = editText.getText().toString().trim();
+        //Проверяем на правильно введенный город
+        if(isCityCorrect(message)) {
+            //isCityCorrect(message);
+            // действия, совершаемые после нажатия на кнопку
+            // Создаем объект Intent для вызова новой Activity
+            Intent intent = new Intent(this, MainActivity.class);
+
+            DateFormat df = new SimpleDateFormat("EEE, MMM d");
+            String date = df.format(Calendar.getInstance().getTime());
+            // Добавляем с помощью свойства putExtra объект
+            intent.putExtra(Constants.DATE_MESSAGE, date);
+            intent.putExtra(Constants.CITY_MESSAGE, message);
+            // запуск activity
+            startActivity(intent);
+        }
+        else setErrorDialog(message);
+    }
+
+    private void setErrorDialog(String message) {
+        // Создаём билдер и передаём контекст приложения
+        AlertDialog.Builder builder = new AlertDialog.Builder(ChooseCityActivity.this);
+        // В билдере указываем заголовок окна (можно указывать как ресурс,
+        // так и строку)
+        builder.setTitle(R.string.city_not_found)
+                // Указываем сообщение в окне (также есть вариант со
+                // строковым параметром)
+                .setMessage(R.string.try_again)
+                // Можно указать и пиктограмму
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                // Из этого окна нельзя выйти кнопкой Back
+                .setCancelable(false)
+                // Устанавливаем кнопку (название кнопки также можно
+                // задавать строкой)
+                .setNeutralButton(R.string.button_ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+
+    private Boolean isCityCorrect(String message) {
+        return Arrays.asList(cities).contains(message);
     }
 
     public void detectOrientation() {
@@ -149,11 +191,10 @@ public class ChooseCityActivity extends AppCompatActivity {
             EditText editText = (EditText) findViewById(R.id.actv);
             Bundle bundle = new Bundle();
             bundle.putString(Constants.FRAGMENT_CITY, editText.getText().toString());
+            //TODO: set temp from URL
             bundle.putString(Constants.FRAGMENT_TEMP, "+18°");
             fragment.setArguments(bundle);
             getSupportFragmentManager().beginTransaction().replace(R.id.fr_choose_info, fragment).commit();
             isExistChooseCityFragment = true;
-
-
     }
 }
