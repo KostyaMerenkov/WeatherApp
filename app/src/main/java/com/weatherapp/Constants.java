@@ -7,4 +7,5 @@ public class Constants {
     public final static String FRAGMENT_CITY = "FRAGMENT_CITY";
     public final static String FRAGMENT_TEMP = "FRAGMENT_TEMP";
     public final static boolean DEBUG = false;
+    public static final String CITY_ID = "CITY_ID";
 }
