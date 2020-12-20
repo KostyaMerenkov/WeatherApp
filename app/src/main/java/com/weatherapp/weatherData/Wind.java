@@ -1,23 +1,30 @@
 package com.weatherapp.weatherData;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
+// "wind":{"speed":1,"deg":140}
 public class Wind {
-    private int speed;
-    private int deg;
+    @SerializedName("speed")
+    @Expose
+    private float speed;
+    @SerializedName("deg")
+    @Expose
+    private float deg;
 
-    public int getDeg() {
-        return deg;
-    }
-
-    public void setDeg(int deg) {
-        this.deg = deg;
-    }
-
-    public int getSpeed() {
+    public float getSpeed() {
         return speed;
     }
 
-    public void setSpeed(int speed) {
+    public void setSpeed(float speed) {
         this.speed = speed;
     }
 
+    public float getDeg() {
+        return deg;
+    }
+
+    public void setDeg(float deg) {
+        this.deg = deg;
+    }
 }

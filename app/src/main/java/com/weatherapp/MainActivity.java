@@ -6,6 +6,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -15,61 +16,64 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.os.PersistableBundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.gson.Gson;
-import com.weatherapp.weatherData.GetWeather;
-import com.weatherapp.weatherData.Weather;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.RequestCreator;
+import com.squareup.picasso.Target;
+import com.weatherapp.weatherData.ApiHolder;
+import com.weatherapp.weatherData.OpenWeather;
 import com.weatherapp.weatherData.WeatherRequest;
 
 import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-import javax.net.ssl.HttpsURLConnection;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-    private TextView tempTextView;
+    private final static String TAG = MainActivity.class.getSimpleName();
 
-    private final static String TAG = GetWeather.class.getSimpleName();
+    private SharedPreferences sharedPref;
 
-    private static final String WEATHER_URL = "https://api.openweathermap.org/data/2.5/weather?lat=55.75&lon=37.62&appid=";
-
-    private TextView city;
+    private TextView city_name;
     private TextView temperature;
     private TextView windSpeed;
     private TextView humidity;
     private TextView pressure;
     private TextView clouds;
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         Intent intent = getIntent();
-        String message = intent.getStringExtra(Constants.CITY_MESSAGE);
-        Snackbar.make(findViewById(R.id.constraintLayout), "Вы выбрали: " + message, Snackbar.LENGTH_LONG).show();
-        String city_id = String.valueOf(Arrays.asList(getResources().getStringArray(R.array.city_ids)).get(Arrays.asList(getResources().getStringArray(R.array.cities)).indexOf(message)));
-        GetWeather getWeather = new GetWeather(city_id, MainActivity.this,MainActivity.this, new Handler());
+        String city = intent.getStringExtra(Constants.CITY_MESSAGE);
+        Snackbar.make(findViewById(R.id.constraintLayout), "Вы выбрали: " + city, Snackbar.LENGTH_LONG).show();
+        String city_id = String.valueOf(Arrays.asList(getResources().getStringArray(R.array.city_ids)).get(Arrays.asList(getResources().getStringArray(R.array.cities)).indexOf(city)));
+        //GetWeather getWeather = new GetWeather(city_id, MainActivity.this,MainActivity.this, new Handler());
         String date = intent.getStringExtra(Constants.DATE_MESSAGE);
         Button date_button = findViewById(R.id.date_button);
         date_button.setText(date);
@@ -84,11 +88,32 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .build();
         initRecyclerView(sourceData);
 
+        initGui();
+        initPreferences();
+        requestRetrofit(city, BuildConfig.WEATHER_API_KEY);
+
+        setBackground();
 
         if (Constants.DEBUG) {
             Toast.makeText(getApplicationContext(), "onCreate()", Toast.LENGTH_SHORT).show();
             detectOrientation();
         }
+    }
+
+    private void setBackground() {
+        ConstraintLayout constraintLayout = findViewById(R.id.constraintLayout);
+        ImageView img = new ImageView(this);
+        Picasso.get().load("https://images.unsplash.com/photo-1607275667966-5923aacbba8f?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1234&q=80").into(img, new com.squareup.picasso.Callback() {
+            @Override
+            public void onSuccess() {
+                constraintLayout.setBackground(img.getDrawable());
+            }
+
+            @Override
+            public void onError(Exception e) {
+                Log.d(TAG, "IMAGE FAILED");
+            }
+        });
     }
 
     private Toolbar initToolbar() {
@@ -97,7 +122,58 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return toolbar;
     }
 
-    public void setConnectionTimeout(String city_id) {
+    private void initPreferences() {
+        sharedPref = getPreferences(MODE_PRIVATE);
+        loadPreferences();                   // Загружаем настройки
+    }
+
+    // Инициализируем пользовательские элементы
+    private void initGui() {
+        temperature = (TextView) findViewById(R.id.main_tempView);
+        windSpeed = (TextView) findViewById(R.id.wind_info);
+        humidity = (TextView) findViewById(R.id.humidity_info);
+        pressure = (TextView) findViewById(R.id.pressure_info);
+        clouds = (TextView) findViewById(R.id.textView3);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        savePreferences();
+    }
+
+    // Сохраняем настройки
+    private void savePreferences() {
+        SharedPreferences.Editor editor = sharedPref.edit();
+        //editor.putString("apiKey", editApiKey.getText().toString());
+        editor.commit();
+    }
+
+    // Загружаем настройки
+    private void loadPreferences() {
+        String loadedApiKey = sharedPref.getString("apiKey", BuildConfig.WEATHER_API_KEY);
+        //editApiKey.setText(loadedApiKey);
+    }
+
+
+    private void requestRetrofit(String city, String keyApi) {
+        ApiHolder apiHolder = new ApiHolder();
+        apiHolder.getOpenWeather().loadWeather(city, keyApi)
+                .enqueue(new Callback<WeatherRequest>() {
+                    @Override
+                    public void onResponse(Call<WeatherRequest> call, Response<WeatherRequest> response) {
+                        if (response.body() != null) {
+                            setWeather(response);
+                        }
+                    }
+                    @Override
+                    public void onFailure(Call<WeatherRequest> call, Throwable t) {
+                        setConnectionTimeout(city);
+                    }
+                });
+    }
+
+    public void setConnectionTimeout(String city) {
         //Snackbar.make(findViewById(R.id.main_tempView), "Ошибка подключения к серверу", Snackbar.LENGTH_LONG).show();
         // Создаём билдер и передаём контекст приложения
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
@@ -121,7 +197,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                 {
                                     public void run()
                                     {
-                                        GetWeather getWeather = new GetWeather(city_id, MainActivity.this,MainActivity.this, new Handler());
+                                        requestRetrofit(city, BuildConfig.WEATHER_API_KEY);
                                     }
                                 });
                             }
@@ -135,19 +211,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         alert.show();
     }
 
-    public void setWeather(WeatherRequest weatherRequest) {
-        temperature = (TextView) findViewById(R.id.main_tempView);
-        windSpeed = (TextView) findViewById(R.id.wind_info);
-        humidity = (TextView) findViewById(R.id.humidity_info);
-        pressure = (TextView) findViewById(R.id.pressure_info);
-        clouds = (TextView) findViewById(R.id.textView3);
+    public void setWeather(Response<WeatherRequest> response) {
         Toolbar city = findViewById(R.id.toolbar);
-        city.setTitle(weatherRequest.getName());
-        temperature.setText(String.format("%d + \"°\"", (int) weatherRequest.getMain().getTemp()-273));
-        pressure.setText(String.format(getString(R.string.pressure), weatherRequest.getMain().getPressure()));
-        humidity.setText(String.format(getString(R.string.humidity), weatherRequest.getMain().getHumidity())+"%");
-        windSpeed.setText(String.format(getString(R.string.wind), weatherRequest.getWind().getSpeed()));
-        clouds.setText(weatherRequest.getWeather()[0].getDescription());
+        city.setTitle(response.body().getName());
+        temperature.setText(String.format("%d + \"°\"", (int) response.body().getMain().getTemp()-273));
+        pressure.setText(String.format(getString(R.string.pressure), response.body().getMain().getPressure()));
+        humidity.setText(String.format(getString(R.string.humidity), response.body().getMain().getHumidity())+"%");
+        windSpeed.setText(String.format(getString(R.string.wind), (int) response.body().getWind().getSpeed()));
+        clouds.setText(response.body().getWeather()[0].getDescription());
     }
 
     private void initDrawer(Toolbar toolbar) {
@@ -181,7 +252,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            startSettings(this.tempTextView);
+            startSettings();
             return true;
         }
 
@@ -289,7 +360,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         startActivity(linkInet);
     }
 
-    public void startSettings(View view) {
+    public void startSettings() {
         // действия, совершаемые после нажатия на кнопку
         // Создаем объект Intent для вызова новой Activity
         Intent intent = new Intent(this, SettingsActivity.class);
@@ -309,7 +380,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 startActivity(intent);
                 break;
             case R.id.nav_settings:
-                startSettings(this.tempTextView);
+                startSettings();
                 break;
             case R.id.nav_dev_info:
                 //TODO:

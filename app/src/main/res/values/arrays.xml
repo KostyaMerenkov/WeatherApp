@@ -7,7 +7,7 @@
 
     <!-- Greeting app -->
     <string-array name="cities">
-        <item><string name="Moscow">Москва</string></item>
+        <item><string name="Moscow">Moscow</string></item>
         <item><string name="Saint-petersburg">Санкт-Петербург</string></item>
         <item><string name="Novosibirsk">Новосибирск</string></item>
         <item><string name="Ekaterinburg">Екатеринбург</string></item>
