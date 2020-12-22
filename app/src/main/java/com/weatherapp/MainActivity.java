@@ -67,21 +67,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        restorePreferences();
         setContentView(R.layout.activity_main);
 
         Intent intent = getIntent();
         String city = intent.getStringExtra(Constants.CITY_MESSAGE);
         Snackbar.make(findViewById(R.id.constraintLayout), "Вы выбрали: " + city, Snackbar.LENGTH_LONG).show();
-        String city_id = String.valueOf(Arrays.asList(getResources().getStringArray(R.array.city_ids)).get(Arrays.asList(getResources().getStringArray(R.array.cities)).indexOf(city)));
-        //GetWeather getWeather = new GetWeather(city_id, MainActivity.this,MainActivity.this, new Handler());
-        String date = intent.getStringExtra(Constants.DATE_MESSAGE);
-        Button date_button = findViewById(R.id.date_button);
-        date_button.setText(date);
 
         Toolbar toolbar = initToolbar();
         initDrawer(toolbar);
 
-        //RecyclerView
+        setBackground();
+
+        // RecyclerView
         // строим источник данных
         SocialDataSource sourceData = new SocSourceBuilder()
                 .setResources(getResources())
@@ -92,7 +91,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         initPreferences();
         requestRetrofit(city, BuildConfig.WEATHER_API_KEY);
 
-        setBackground();
+
 
         if (Constants.DEBUG) {
             Toast.makeText(getApplicationContext(), "onCreate()", Toast.LENGTH_SHORT).show();
@@ -100,10 +99,31 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    private void restorePreferences() {
+        sharedPref = getSharedPreferences(getPackageName(), MODE_PRIVATE);
+        if (sharedPref.getBoolean(Constants.DARK_THEME, true)) {
+            if (sharedPref.getBoolean(Constants.BLACK_THEME, false)) {
+                //TODO: BLACK_THEME
+                setTheme(R.style.WeatherAppNight);
+            }
+            setTheme(R.style.WeatherAppNight);
+        } else setTheme(R.style.WeatherAppNight);
+    }
+
+    public SharedPreferences getSharedPref() {
+        return sharedPref;
+    }
+
     private void setBackground() {
+        String url;
         ConstraintLayout constraintLayout = findViewById(R.id.constraintLayout);
         ImageView img = new ImageView(this);
-        Picasso.get().load("https://images.unsplash.com/photo-1607275667966-5923aacbba8f?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1234&q=80").into(img, new com.squareup.picasso.Callback() {
+        if (sharedPref.getBoolean(Constants.DARK_THEME, false)) {
+            url = "https://images.unsplash.com/photo-1606156114499-f44bbb400363?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1301&q=80";
+        } else {
+            url = "https://images.unsplash.com/photo-1607275667966-5923aacbba8f?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1234&q=80";
+        }
+        Picasso.get().load(url).into(img, new com.squareup.picasso.Callback() {
             @Override
             public void onSuccess() {
                 constraintLayout.setBackground(img.getDrawable());
@@ -354,17 +374,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
 
-    public void date_info(View view) {
+    public void getDateInfo(MenuItem item) {
         Uri address = Uri.parse("https://www.calend.ru/narod/");
         Intent linkInet = new Intent(Intent.ACTION_VIEW, address);
         startActivity(linkInet);
     }
 
     public void startSettings() {
-        // действия, совершаемые после нажатия на кнопку
         // Создаем объект Intent для вызова новой Activity
         Intent intent = new Intent(this, SettingsActivity.class);
-        startActivity(intent);
+        startActivityForResult(intent, RESULT_CANCELED);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+            if (resultCode == RESULT_OK) recreate();
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
@@ -395,4 +420,5 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
 }

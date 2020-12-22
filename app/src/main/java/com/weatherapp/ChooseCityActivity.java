@@ -36,7 +36,6 @@ public class ChooseCityActivity extends AppCompatActivity {
 
     public final static String TAG = "CHOOSE_CITY";
     private Boolean isExistChooseCityFragment = false;
-    private String[] cities;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +50,7 @@ public class ChooseCityActivity extends AppCompatActivity {
                 return false;
             }
         });
-        cities = getResources().getStringArray(R.array.cities);
+        String[] cities = getResources().getStringArray(R.array.cities);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_list_item_1, cities);
         editText.setAdapter(adapter);
@@ -127,8 +126,6 @@ public class ChooseCityActivity extends AppCompatActivity {
         String message = editText.getText().toString().trim();
         //Проверяем на правильно введенный город
         if(isCityCorrect(message)) {
-            //isCityCorrect(message);
-            // действия, совершаемые после нажатия на кнопку
             // Создаем объект Intent для вызова новой Activity
             Intent intent = new Intent(this, MainActivity.class);
 
@@ -169,7 +166,7 @@ public class ChooseCityActivity extends AppCompatActivity {
     }
 
     private Boolean isCityCorrect(String message) {
-        return Arrays.asList(cities).contains(message);
+        return Arrays.asList(getResources().getStringArray(R.array.cities)).contains(message);
     }
 
     public void detectOrientation() {
