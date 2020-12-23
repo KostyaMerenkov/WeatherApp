@@ -1,4 +1,4 @@
-package com.weatherapp;
+package com.weatherapp.model.weatherData;
 
 public class City {
     private int id;

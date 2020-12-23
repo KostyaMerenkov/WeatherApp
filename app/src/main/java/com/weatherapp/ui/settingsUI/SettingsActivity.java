@@ -1,21 +1,20 @@
-package com.weatherapp;
+package com.weatherapp.ui.settingsUI;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.widget.Button;
-import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
-import androidx.preference.SwitchPreference;
 import androidx.preference.SwitchPreferenceCompat;
 
 import com.google.android.material.snackbar.Snackbar;
+import com.weatherapp.model.BaseActivity;
+import com.weatherapp.model.Constants;
+import com.weatherapp.R;
 
 public class SettingsActivity extends BaseActivity {
 
@@ -53,10 +52,10 @@ public class SettingsActivity extends BaseActivity {
         if (sharedPref.getBoolean(Constants.DARK_THEME, false)) {
             if (sharedPref.getBoolean(Constants.BLACK_THEME, false)) {
                 //TODO: BLACK_THEME
-                setTheme(R.style.WeatherAppNight);
+                setTheme(R.style.ThemeMenu);
             }
-            setTheme(R.style.WeatherAppNight);
-        } else setTheme(R.style.WeatherAppNight);
+            setTheme(R.style.ThemeMenu);
+        } else setTheme(R.style.ThemeMenu);
     }
 
     @Override

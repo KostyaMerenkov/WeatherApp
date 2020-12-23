@@ -1,16 +1,14 @@
-package com.weatherapp;
+package com.weatherapp.ui;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -24,15 +22,12 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.material.snackbar.Snackbar;
+import com.weatherapp.R;
+import com.weatherapp.model.Constants;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 
-public class ChooseCityActivity extends AppCompatActivity {
+public class GreetingActivity extends AppCompatActivity {
 
     public final static String TAG = "CHOOSE_CITY";
     private Boolean isExistChooseCityFragment = false;
@@ -40,7 +35,7 @@ public class ChooseCityActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_choose_city);
+        setContentView(R.layout.activity_greeting);
         AutoCompleteTextView editText = findViewById(R.id.actv);
         editText.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -128,13 +123,10 @@ public class ChooseCityActivity extends AppCompatActivity {
         if(isCityCorrect(message)) {
             // Создаем объект Intent для вызова новой Activity
             Intent intent = new Intent(this, MainActivity.class);
-
-            DateFormat df = new SimpleDateFormat("EEE, MMM d");
-            String date = df.format(Calendar.getInstance().getTime());
-            // Добавляем с помощью свойства putExtra объект
-            intent.putExtra(Constants.DATE_MESSAGE, date);
             intent.putExtra(Constants.CITY_MESSAGE, message);
             // запуск activity
+            SharedPreferences sharedPref = getSharedPreferences(getPackageName(), MODE_PRIVATE);
+            sharedPref.edit().putString(Constants.CITY_MESSAGE, message).apply();
             startActivity(intent);
         }
         else setErrorDialog(message);
@@ -142,7 +134,7 @@ public class ChooseCityActivity extends AppCompatActivity {
 
     private void setErrorDialog(String message) {
         // Создаём билдер и передаём контекст приложения
-        AlertDialog.Builder builder = new AlertDialog.Builder(ChooseCityActivity.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(GreetingActivity.this);
         // В билдере указываем заголовок окна (можно указывать как ресурс,
         // так и строку)
         builder.setTitle(R.string.city_not_found)
@@ -184,7 +176,7 @@ public class ChooseCityActivity extends AppCompatActivity {
 
     public void putFragment(View view){
 
-            Fragment fragment = new CityInfoFragment();
+            Fragment fragment = new cityInfoFragment();
             EditText editText = (EditText) findViewById(R.id.actv);
             Bundle bundle = new Bundle();
             bundle.putString(Constants.FRAGMENT_CITY, editText.getText().toString());

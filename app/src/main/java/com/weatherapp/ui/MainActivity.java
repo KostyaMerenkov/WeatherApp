@@ -1,4 +1,4 @@
-package com.weatherapp;
+package com.weatherapp.ui;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -7,8 +7,10 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -18,9 +20,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.PersistableBundle;
@@ -28,7 +27,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -36,28 +35,29 @@ import android.widget.Toast;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.squareup.picasso.Picasso;
-import com.squareup.picasso.RequestCreator;
-import com.squareup.picasso.Target;
-import com.weatherapp.weatherData.ApiHolder;
-import com.weatherapp.weatherData.OpenWeather;
-import com.weatherapp.weatherData.WeatherRequest;
+import com.weatherapp.BuildConfig;
+import com.weatherapp.model.Constants;
+import com.weatherapp.R;
+import com.weatherapp.ui.settingsUI.SettingsActivity;
+import com.weatherapp.model.MainSourceBuilder;
+import com.weatherapp.model.SocialDataSource;
+import com.weatherapp.model.MainAdapter;
+import com.weatherapp.model.weatherData.ApiHolder;
+import com.weatherapp.model.weatherData.WeatherRequest;
 
 import java.io.BufferedReader;
-import java.util.Arrays;
 import java.util.stream.Collectors;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private final static String TAG = MainActivity.class.getSimpleName();
 
     private SharedPreferences sharedPref;
 
-    private TextView city_name;
+    private String city;
     private TextView temperature;
     private TextView windSpeed;
     private TextView humidity;
@@ -67,13 +67,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        sharedPref = getSharedPreferences(getPackageName(), MODE_PRIVATE);
+        checkForFirstRun();
+
+        //putFragment(R.id.fragment_main_container, new MainFragment());
 
         restorePreferences();
         setContentView(R.layout.activity_main);
 
-        Intent intent = getIntent();
-        String city = intent.getStringExtra(Constants.CITY_MESSAGE);
-        Snackbar.make(findViewById(R.id.constraintLayout), "Вы выбрали: " + city, Snackbar.LENGTH_LONG).show();
+        Snackbar.make(findViewById(R.id.fragment_main_container), "Вы выбрали: " + city, Snackbar.LENGTH_LONG).show();
 
         Toolbar toolbar = initToolbar();
         initDrawer(toolbar);
@@ -82,7 +84,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         // RecyclerView
         // строим источник данных
-        SocialDataSource sourceData = new SocSourceBuilder()
+        SocialDataSource sourceData = new MainSourceBuilder()
                 .setResources(getResources())
                 .build();
         initRecyclerView(sourceData);
@@ -99,8 +101,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    private void checkForFirstRun() {
+        if (sharedPref.getString(Constants.CITY_MESSAGE, null) != null){
+            city = sharedPref.getString(Constants.CITY_MESSAGE, null);
+        } else startGreetingActivity();
+    }
+
+    private void startGreetingActivity() {
+        Intent intent = new Intent(this, GreetingActivity.class);
+        startActivity(intent);
+    }
+
     private void restorePreferences() {
-        sharedPref = getSharedPreferences(getPackageName(), MODE_PRIVATE);
         if (sharedPref.getBoolean(Constants.DARK_THEME, true)) {
             if (sharedPref.getBoolean(Constants.BLACK_THEME, false)) {
                 //TODO: BLACK_THEME
@@ -116,7 +128,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void setBackground() {
         String url;
-        ConstraintLayout constraintLayout = findViewById(R.id.constraintLayout);
+        CoordinatorLayout mainLayout = findViewById(R.id.main_layout);
         ImageView img = new ImageView(this);
         if (sharedPref.getBoolean(Constants.DARK_THEME, false)) {
             url = "https://images.unsplash.com/photo-1606156114499-f44bbb400363?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1301&q=80";
@@ -126,7 +138,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Picasso.get().load(url).into(img, new com.squareup.picasso.Callback() {
             @Override
             public void onSuccess() {
-                constraintLayout.setBackground(img.getDrawable());
+                mainLayout.setBackground(img.getDrawable());
             }
 
             @Override
@@ -357,13 +369,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         recyclerView.setLayoutManager(layoutManager);
 
         // Установим адаптер
-        SocnetAdapter adapter = new SocnetAdapter(sourceData);
+        MainAdapter adapter = new MainAdapter(sourceData);
         recyclerView.setAdapter(adapter);
 
 
         if (Constants.DEBUG) {
             // Установим слушателя
-            adapter.SetOnItemClickListener(new SocnetAdapter.OnItemClickListener() {
+            adapter.SetOnItemClickListener(new MainAdapter.OnItemClickListener() {
                 @Override
                 public void onItemClick(View view, int position) {
 
@@ -401,8 +413,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 //TODO:
                 break;
             case R.id.nav_choose_city:
-                Intent intent = new Intent(this, ChooseCityActivity.class);
-                startActivity(intent);
+                putFragment(R.id.fragment_main_container, new cityFragment());
                 break;
             case R.id.nav_settings:
                 startSettings();
@@ -419,6 +430,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    public void putFragment(int id, Fragment fragment){
+        //TODO: решить проблему с накладыванием фрагмента!
+        getSupportFragmentManager().beginTransaction().replace(id, fragment).addToBackStack(null).commit();
     }
 
 }

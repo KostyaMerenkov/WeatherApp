@@ -11,20 +11,21 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/WeatherAppNight">
-        <activity android:name=".BaseActivity"></activity>
+        <activity android:name=".model.BaseActivity"></activity>
         <activity
-            android:name=".SettingsActivity"
+            android:name=".ui.settingsUI.SettingsActivity"
             android:label="@string/title_activity_settings"></activity>
-        <activity android:name=".ChooseCityActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+        <activity android:name=".ui.GreetingActivity">
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.MainActivity"
             android:label="@string/app_name">
+        <intent-filter>
+            <action android:name="android.intent.action.MAIN" />
+
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent-filter>
         </activity>
     </application>
 

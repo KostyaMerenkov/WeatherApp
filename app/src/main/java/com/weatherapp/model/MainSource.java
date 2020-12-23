@@ -1,21 +1,23 @@
-package com.weatherapp;
+package com.weatherapp.model;
 
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 
+import com.weatherapp.R;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class SocSource implements SocialDataSource {
-    private List<Soc> dataSource;   // строим этот источник данных
+public class MainSource implements SocialDataSource {
+    private List<MainSoc> dataSource;   // строим этот источник данных
     private Resources resources;    // ресурсы приложения
 
-    public SocSource(Resources resources) {
+    public MainSource(Resources resources) {
         dataSource = new ArrayList<>(6);
         this.resources = resources;
     }
 
-    public SocSource init(){
+    public MainSource init(){
         // строки описаний из ресурсов
         String[] dates = resources.getStringArray(R.array.rv_days);
         //строки температур
@@ -24,12 +26,12 @@ public class SocSource implements SocialDataSource {
         int[] pictures = getImageArray();
         // заполнение источника данных
         for (int i = 0; i < dates.length; i++) {
-            dataSource.add(new Soc(dates[i], pictures[i], temp[i]));
+            dataSource.add(new MainSoc(dates[i], pictures[i], temp[i]));
         }
         return this;
     }
 
-    public Soc getSoc(int position) {
+    public MainSoc getSoc(int position) {
         return dataSource.get(position);
     }
 

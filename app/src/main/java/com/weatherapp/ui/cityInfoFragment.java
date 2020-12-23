@@ -1,24 +1,19 @@
-package com.weatherapp;
+package com.weatherapp.ui;
 
-import android.content.res.Configuration;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
-import android.widget.AutoCompleteTextView;
-import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import com.weatherapp.R;
+import com.weatherapp.model.Constants;
 
 
-public class CityInfoFragment extends Fragment {
+public class cityInfoFragment extends Fragment {
 
 
     View view;

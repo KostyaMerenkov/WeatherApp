@@ -75,8 +75,9 @@
     <!-- Фрагмент с выбором городов -->
 
     <FrameLayout
+        android:id="@+id/fr_choose_info"
         android:layout_width="wrap_content"
-        android:layout_height="0dp"
+        android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/imageView"
         app:layout_constraintHorizontal_bias="1"
@@ -85,8 +86,8 @@
         app:layout_constraintVertical_bias="0.0">
 
         <fragment
-            android:id="@+id/fr_choose_info"
-            android:name="com.weatherapp.CityInfoFragment"
+
+            android:name="com.weatherapp.ui.cityInfoFragment"
             android:layout_width="370dp"
             android:layout_height="match_parent">
 

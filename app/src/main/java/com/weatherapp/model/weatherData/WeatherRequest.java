@@ -1,12 +1,7 @@
-package com.weatherapp.weatherData;
+package com.weatherapp.model.weatherData;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import com.weatherapp.weatherData.Clouds;
-import com.weatherapp.weatherData.Coord;
-import com.weatherapp.weatherData.Main;
-import com.weatherapp.weatherData.Weather;
-import com.weatherapp.weatherData.Wind;
 
 public class WeatherRequest {
     @SerializedName("coord")

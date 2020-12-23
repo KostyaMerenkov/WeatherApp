@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.MainFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_anchor="@+id/constraintLayout"
+        app:layout_anchorGravity="center"
+        tools:context=".ui.MainActivity">
+
+        <TextView
+            android:id="@+id/main_tempView"
+            android:layout_width="150dp"
+            android:layout_height="111dp"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="24dp"
+            android:elegantTextHeight="false"
+            android:gravity="center"
+            android:maxLength="3"
+            android:maxLines="1"
+            android:text="@string/temperature"
+            android:textSize="@dimen/temperature_now_text"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/wind_info"
+            android:layout_width="@dimen/info_width"
+            android:layout_height="@dimen/info_height"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="24dp"
+            android:text="@string/today_info"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView3" />
+
+        <TextView
+            android:id="@+id/humidity_info"
+            android:layout_width="@dimen/info_width"
+            android:layout_height="@dimen/info_height"
+            android:layout_marginTop="4dp"
+            android:text="@string/today_info"
+            app:layout_constraintStart_toStartOf="@+id/wind_info"
+            app:layout_constraintTop_toBottomOf="@+id/wind_info" />
+
+        <TextView
+            android:id="@+id/pressure_info"
+            android:layout_width="210dp"
+            android:layout_height="32dp"
+            android:layout_marginTop="4dp"
+            android:text="@string/today_info"
+            app:layout_constraintStart_toStartOf="@+id/wind_info"
+            app:layout_constraintTop_toBottomOf="@+id/humidity_info" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/main_tempView"
+            app:layout_constraintVertical_bias="0.08" />
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="171dp"
+            android:layout_height="35dp"
+            android:gravity="center"
+            android:text="@string/clouds_info"
+            android:textSize="@dimen/clouds_info_text"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.854"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/main_tempView" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>

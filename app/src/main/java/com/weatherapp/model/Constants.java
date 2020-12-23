@@ -1,4 +1,4 @@
-package com.weatherapp;
+package com.weatherapp.model;
 
 public class Constants {
     public final static String CITY_MESSAGE = "CITY";

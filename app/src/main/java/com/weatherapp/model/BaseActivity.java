@@ -1,4 +1,4 @@
-package com.weatherapp;
+package com.weatherapp.model;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;

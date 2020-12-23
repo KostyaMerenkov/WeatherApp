@@ -1,4 +1,4 @@
-package com.weatherapp.weatherData;
+package com.weatherapp.model.weatherData;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 

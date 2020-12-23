@@ -1,23 +1,19 @@
-package com.weatherapp;
+package com.weatherapp.model;
 
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.CheckBox;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
-import java.util.Map;
+import com.weatherapp.R;
 
 // Адаптер
-public class SocnetAdapter extends RecyclerView.Adapter<SocnetAdapter.ViewHolder> {
+public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
 
     private SocialDataSource dataSource;
 
@@ -26,7 +22,7 @@ public class SocnetAdapter extends RecyclerView.Adapter<SocnetAdapter.ViewHolder
 
     // Передаем в конструктор источник данных
     // В нашем случае это массив, но может быть и запросом к БД
-    public SocnetAdapter(SocialDataSource dataSource){
+    public MainAdapter(SocialDataSource dataSource){
         this.dataSource = dataSource;
     }
 
@@ -34,7 +30,7 @@ public class SocnetAdapter extends RecyclerView.Adapter<SocnetAdapter.ViewHolder
     // Запускается менеджером
     @NonNull
     @Override
-    public SocnetAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+    public MainAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         // Создаем новый элемент пользовательского интерфейса
         // Через Inflater
         View v = LayoutInflater.from(viewGroup.getContext())
@@ -54,11 +50,11 @@ public class SocnetAdapter extends RecyclerView.Adapter<SocnetAdapter.ViewHolder
     // Заменить данные в пользовательском интерфейсе
     // Вызывается менеджером
     @Override
-    public void onBindViewHolder(@NonNull SocnetAdapter.ViewHolder viewHolder, int i) {
+    public void onBindViewHolder(@NonNull MainAdapter.ViewHolder viewHolder, int i) {
         // Получить элемент из источника данных (БД, интернет...)
         // Вынести на экран используя ViewHolder
-        Soc soc = dataSource.getSoc(i);
-        viewHolder.setData(soc.getDate(), soc.getPicture(), soc.getTemp());
+        MainSoc mainSoc = dataSource.getSoc(i);
+        viewHolder.setData(mainSoc.getDate(), mainSoc.getPicture(), mainSoc.getTemp());
         if (Constants.DEBUG) {
             Log.d("SocnetAdapter", "onBindViewHolder");
         }
