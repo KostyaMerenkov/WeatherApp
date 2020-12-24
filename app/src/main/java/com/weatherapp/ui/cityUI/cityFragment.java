@@ -1,4 +1,4 @@
-package com.weatherapp.ui;
+package com.weatherapp.ui.cityUI;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.weatherapp.R;
+import com.weatherapp.ui.MycityRecyclerViewAdapter;
 import com.weatherapp.ui.dummy.DummyContent;
 
 /**

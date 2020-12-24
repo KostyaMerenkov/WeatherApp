@@ -9,5 +9,5 @@
     android:layout_marginLeft="16dp"
     android:layout_marginRight="16dp"
     app:layoutManager="LinearLayoutManager"
-    tools:context=".ui.cityFragment"
+    tools:context=".ui.cityUI.cityFragment"
     tools:listitem="@layout/fragment_city" />

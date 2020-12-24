@@ -6,14 +6,14 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.navigation.ui.NavigationUI;
+import androidx.navigation.ui.AppBarConfiguration;
+
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -26,8 +26,6 @@ import android.os.PersistableBundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -39,9 +37,6 @@ import com.weatherapp.BuildConfig;
 import com.weatherapp.model.Constants;
 import com.weatherapp.R;
 import com.weatherapp.ui.settingsUI.SettingsActivity;
-import com.weatherapp.model.MainSourceBuilder;
-import com.weatherapp.model.SocialDataSource;
-import com.weatherapp.model.MainAdapter;
 import com.weatherapp.model.weatherData.ApiHolder;
 import com.weatherapp.model.weatherData.WeatherRequest;
 
@@ -58,11 +53,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private SharedPreferences sharedPref;
 
     private String city;
-    private TextView temperature;
-    private TextView windSpeed;
-    private TextView humidity;
-    private TextView pressure;
-    private TextView clouds;
+    private AppBarConfiguration mAppBarConfiguration;
+    private CoordinatorLayout coordinatorlayout;
+    private NavController navController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,25 +68,28 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         restorePreferences();
         setContentView(R.layout.activity_main);
 
-        Snackbar.make(findViewById(R.id.fragment_main_container), "Вы выбрали: " + city, Snackbar.LENGTH_LONG).show();
+        Snackbar.make(findViewById(R.id.main_layout), "Вы выбрали: " + city, Snackbar.LENGTH_LONG).show();
 
         Toolbar toolbar = initToolbar();
         initDrawer(toolbar);
 
         setBackground();
 
-        // RecyclerView
-        // строим источник данных
-        SocialDataSource sourceData = new MainSourceBuilder()
-                .setResources(getResources())
-                .build();
-        initRecyclerView(sourceData);
-
-        initGui();
         initPreferences();
-        requestRetrofit(city, BuildConfig.WEATHER_API_KEY);
+        //requestRetrofit(city, BuildConfig.WEATHER_API_KEY);
 
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
 
+        mAppBarConfiguration = new AppBarConfiguration.Builder(
+                R.id.nav_weather, R.id.nav_choose, R.id.nav_settings)
+                .setDrawerLayout(drawer)
+                .build();
+        navController = Navigation.findNavController(this, R.id.fragment_main);
+        NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
+        NavigationUI.setupWithNavController(navigationView, navController);
+
+        navigationView.setNavigationItemSelectedListener(this);
 
         if (Constants.DEBUG) {
             Toast.makeText(getApplicationContext(), "onCreate()", Toast.LENGTH_SHORT).show();
@@ -159,15 +155,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         loadPreferences();                   // Загружаем настройки
     }
 
-    // Инициализируем пользовательские элементы
-    private void initGui() {
-        temperature = (TextView) findViewById(R.id.main_tempView);
-        windSpeed = (TextView) findViewById(R.id.wind_info);
-        humidity = (TextView) findViewById(R.id.humidity_info);
-        pressure = (TextView) findViewById(R.id.pressure_info);
-        clouds = (TextView) findViewById(R.id.textView3);
-    }
-
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -185,72 +172,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void loadPreferences() {
         String loadedApiKey = sharedPref.getString("apiKey", BuildConfig.WEATHER_API_KEY);
         //editApiKey.setText(loadedApiKey);
-    }
-
-
-    private void requestRetrofit(String city, String keyApi) {
-        ApiHolder apiHolder = new ApiHolder();
-        apiHolder.getOpenWeather().loadWeather(city, keyApi)
-                .enqueue(new Callback<WeatherRequest>() {
-                    @Override
-                    public void onResponse(Call<WeatherRequest> call, Response<WeatherRequest> response) {
-                        if (response.body() != null) {
-                            setWeather(response);
-                        }
-                    }
-                    @Override
-                    public void onFailure(Call<WeatherRequest> call, Throwable t) {
-                        setConnectionTimeout(city);
-                    }
-                });
-    }
-
-    public void setConnectionTimeout(String city) {
-        //Snackbar.make(findViewById(R.id.main_tempView), "Ошибка подключения к серверу", Snackbar.LENGTH_LONG).show();
-        // Создаём билдер и передаём контекст приложения
-        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-        // В билдере указываем заголовок окна (можно указывать как ресурс,
-        // так и строку)
-        builder.setTitle(R.string.server_error)
-                // Указываем сообщение в окне (также есть вариант со
-                // строковым параметром)
-                .setMessage(R.string.try_again)
-                // Можно указать и пиктограмму
-                .setIcon(android.R.drawable.ic_dialog_alert)
-                // Из этого окна нельзя выйти кнопкой Back
-                .setCancelable(false)
-                // Устанавливаем кнопку (название кнопки также можно
-                // задавать строкой)
-                .setPositiveButton(R.string.button_yes,
-                        // Ставим слушатель, нажатие будем обрабатывать
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                MainActivity.this.runOnUiThread(new Runnable()
-                                {
-                                    public void run()
-                                    {
-                                        requestRetrofit(city, BuildConfig.WEATHER_API_KEY);
-                                    }
-                                });
-                            }
-                        }).setNegativeButton(R.string.button_no, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
-        AlertDialog alert = builder.create();
-        alert.show();
-    }
-
-    public void setWeather(Response<WeatherRequest> response) {
-        Toolbar city = findViewById(R.id.toolbar);
-        city.setTitle(response.body().getName());
-        temperature.setText(String.format("%d + \"°\"", (int) response.body().getMain().getTemp()-273));
-        pressure.setText(String.format(getString(R.string.pressure), response.body().getMain().getPressure()));
-        humidity.setText(String.format(getString(R.string.humidity), response.body().getMain().getHumidity())+"%");
-        windSpeed.setText(String.format(getString(R.string.wind), (int) response.body().getWind().getSpeed()));
-        clouds.setText(response.body().getWeather()[0].getDescription());
     }
 
     private void initDrawer(Toolbar toolbar) {
@@ -327,18 +248,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle outState, @NonNull PersistableBundle outPersistentState) {
-        super.onSaveInstanceState(outState, outPersistentState);
-        outState.putInt("Temp", Integer.parseInt((String) temperature.getText()));
-    }
-
-    @Override
-    public void onRestoreInstanceState(@Nullable Bundle savedInstanceState, @Nullable PersistableBundle persistentState) {
-        super.onRestoreInstanceState(savedInstanceState, persistentState);
-        temperature.setText(savedInstanceState.getInt("Temp"));
-    }
-
     public void detectOrientation() {
         Context appContext = getApplicationContext();
         Configuration configuration = getResources().getConfiguration();
@@ -352,38 +261,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    private void initRecyclerView(SocialDataSource sourceData){
-        RecyclerView recyclerView = findViewById(R.id.recycler_view);
 
-        // Эта установка служит для повышения производительности системы
-        recyclerView.setHasFixedSize(true);
-
-        // Добавим разделитель карточек
-        DividerItemDecoration itemDecoration = new DividerItemDecoration(this,  LinearLayoutManager.HORIZONTAL);
-        itemDecoration.setDrawable(getDrawable(R.drawable.separator));
-        recyclerView.addItemDecoration(itemDecoration);
-
-
-        // Будем работать со встроенным менеджером
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(layoutManager);
-
-        // Установим адаптер
-        MainAdapter adapter = new MainAdapter(sourceData);
-        recyclerView.setAdapter(adapter);
-
-
-        if (Constants.DEBUG) {
-            // Установим слушателя
-            adapter.SetOnItemClickListener(new MainAdapter.OnItemClickListener() {
-                @Override
-                public void onItemClick(View view, int position) {
-
-                    Toast.makeText(MainActivity.this, String.format("Позиция - %d", position), Toast.LENGTH_SHORT).show();
-                }
-            });
-        }
-    }
 
 
     public void getDateInfo(MenuItem item) {
@@ -404,19 +282,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onActivityResult(requestCode, resultCode, data);
     }
 
+
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
-
+        navController.navigate(id);
         switch (id) {
-            case R.id.nav_weather_now:
+            case R.id.nav_weather:
                 //TODO:
                 break;
-            case R.id.nav_choose_city:
-                putFragment(R.id.fragment_main_container, new cityFragment());
+            case R.id.nav_choose:
                 break;
             case R.id.nav_settings:
-                startSettings();
+                //startSettings();
                 break;
             case R.id.nav_dev_info:
                 //TODO:
@@ -432,9 +310,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
-    public void putFragment(int id, Fragment fragment){
-        //TODO: решить проблему с накладыванием фрагмента!
-        getSupportFragmentManager().beginTransaction().replace(id, fragment).addToBackStack(null).commit();
-    }
+//    public void putFragment(int id, Fragment fragment){
+//        //TODO: решить проблему с накладыванием фрагмента!
+//        Fragment fragment = (Fragment) findViewById(R.id.fragment_main);
+//        getSupportFragmentManager().beginTransaction()
+//        getSupportFragmentManager().beginTransaction().replace(id, fragment).addToBackStack(null).commit();
+//
+//    }
 
 }

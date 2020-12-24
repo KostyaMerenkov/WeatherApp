@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.weatherapp.R;
 
 // Адаптер
-public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
+public class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.ViewHolder> {
 
     private SocialDataSource dataSource;
 
@@ -22,7 +22,7 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
 
     // Передаем в конструктор источник данных
     // В нашем случае это массив, но может быть и запросом к БД
-    public MainAdapter(SocialDataSource dataSource){
+    public WeatherAdapter(SocialDataSource dataSource){
         this.dataSource = dataSource;
     }
 
@@ -30,7 +30,7 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
     // Запускается менеджером
     @NonNull
     @Override
-    public MainAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+    public WeatherAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         // Создаем новый элемент пользовательского интерфейса
         // Через Inflater
         View v = LayoutInflater.from(viewGroup.getContext())
@@ -50,7 +50,7 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
     // Заменить данные в пользовательском интерфейсе
     // Вызывается менеджером
     @Override
-    public void onBindViewHolder(@NonNull MainAdapter.ViewHolder viewHolder, int i) {
+    public void onBindViewHolder(@NonNull WeatherAdapter.ViewHolder viewHolder, int i) {
         // Получить элемент из источника данных (БД, интернет...)
         // Вынести на экран используя ViewHolder
         MainSoc mainSoc = dataSource.getSoc(i);
