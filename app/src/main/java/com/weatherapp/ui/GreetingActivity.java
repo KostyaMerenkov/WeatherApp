@@ -24,6 +24,7 @@ import android.widget.Toast;
 
 import com.weatherapp.R;
 import com.weatherapp.model.Constants;
+import com.weatherapp.ui.cityUI.CtyInfoFragment;
 
 import java.util.Arrays;
 
@@ -176,7 +177,7 @@ public class GreetingActivity extends AppCompatActivity {
 
     public void putFragment(View view){
 
-            Fragment fragment = new cityInfoFragment();
+            Fragment fragment = new CtyInfoFragment();
             EditText editText = (EditText) findViewById(R.id.actv);
             Bundle bundle = new Bundle();
             bundle.putString(Constants.FRAGMENT_CITY, editText.getText().toString());

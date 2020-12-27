@@ -96,5 +96,7 @@
     <string name="button_no">Нет</string>
     <string name="city_not_found">Невозможно найти город!</string>
     <string name="button_ok">Продолжить</string>
+    <string name="Weather">Погода</string>
+    <string name="Choose_city">Выберите город:</string>
 
 </resources>

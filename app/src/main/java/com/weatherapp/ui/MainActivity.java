@@ -3,58 +3,60 @@ package com.weatherapp.ui;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
 import androidx.navigation.ui.AppBarConfiguration;
 
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.squareup.picasso.Picasso;
+import com.treebo.internetavailabilitychecker.InternetAvailabilityChecker;
+import com.treebo.internetavailabilitychecker.InternetConnectivityListener;
 import com.weatherapp.BuildConfig;
+import com.weatherapp.model.MainReceiver;
 import com.weatherapp.model.Constants;
 import com.weatherapp.R;
 import com.weatherapp.ui.settingsUI.SettingsActivity;
-import com.weatherapp.model.weatherData.ApiHolder;
-import com.weatherapp.model.weatherData.WeatherRequest;
 
 import java.io.BufferedReader;
 import java.util.stream.Collectors;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, InternetConnectivityListener {
     private final static String TAG = MainActivity.class.getSimpleName();
+    //private BroadcastReceiver mainReceiver = new MainReceiver();
+
+    private InternetAvailabilityChecker mInternetAvailabilityChecker;
 
     private SharedPreferences sharedPref;
 
     private String city;
+    private Toolbar toolbar;
+    private NavigationView navigationView;
     private AppBarConfiguration mAppBarConfiguration;
-    private CoordinatorLayout coordinatorlayout;
     private NavController navController;
 
     @Override
@@ -62,28 +64,33 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         sharedPref = getSharedPreferences(getPackageName(), MODE_PRIVATE);
         checkForFirstRun();
-
-        //putFragment(R.id.fragment_main_container, new MainFragment());
-
         restorePreferences();
+        initPreferences();
+
         setContentView(R.layout.activity_main);
 
-        Snackbar.make(findViewById(R.id.main_layout), "Вы выбрали: " + city, Snackbar.LENGTH_LONG).show();
+        initNotificationChannel();
+        // Программная регистрация ресивера
+        //registerReceiver(mainReceiver, new IntentFilter(Constants.ACTION_SEND_MSG));
 
-        Toolbar toolbar = initToolbar();
+        InternetAvailabilityChecker.init(this);
+        mInternetAvailabilityChecker = InternetAvailabilityChecker.getInstance();
+        mInternetAvailabilityChecker.addInternetConnectivityListener(this);
+
+        toolbar = initToolbar();
         initDrawer(toolbar);
+        toolbar.setTitle(city);
 
         setBackground();
+        //setMainFragment();
 
-        initPreferences();
+
         //requestRetrofit(city, BuildConfig.WEATHER_API_KEY);
-
-        NavigationView navigationView = findViewById(R.id.nav_view);
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        Snackbar.make(findViewById(R.id.main_layout), "Вы выбрали: " + city, Snackbar.LENGTH_LONG).show();
+        navigationView = findViewById(R.id.nav_view);
 
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_weather, R.id.nav_choose, R.id.nav_settings)
-                .setDrawerLayout(drawer)
+                R.id.nav_weather, R.id.nav_choose)
                 .build();
         navController = Navigation.findNavController(this, R.id.fragment_main);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
@@ -91,10 +98,33 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         navigationView.setNavigationItemSelectedListener(this);
 
+
+
         if (Constants.DEBUG) {
             Toast.makeText(getApplicationContext(), "onCreate()", Toast.LENGTH_SHORT).show();
             detectOrientation();
         }
+    }
+
+    private void initNotificationChannel() {
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationChannel channel = new NotificationChannel(Constants.BROADCAST_MAIN_CHANNEL, Constants.BROADCAST_MAIN_CHANNEL, NotificationManager.IMPORTANCE_LOW);
+        notificationManager.createNotificationChannel(channel);
+    }
+
+
+
+
+    private void setMainFragment() {
+        Bundle bundle = new Bundle();
+        bundle.putString(Constants.CITY_MESSAGE, city);
+        Fragment weatherFragment = new WeatherFragment();
+        weatherFragment.setArguments(bundle);
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_main, weatherFragment).commit();
+    }
+
+    public Toolbar getToolbar() {
+        return toolbar;
     }
 
     private void checkForFirstRun() {
@@ -148,6 +178,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         return toolbar;
+    }
+
+    public String getCity() {
+        return city;
     }
 
     private void initPreferences() {
@@ -286,15 +320,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
-        navController.navigate(id);
         switch (id) {
             case R.id.nav_weather:
-                //TODO:
+                navController.navigate(id);
                 break;
             case R.id.nav_choose:
+                navController.navigate(id);
+                toolbar.getMenu().getItem(0).setVisible(true);
                 break;
             case R.id.nav_settings:
-                //startSettings();
+                startSettings();
                 break;
             case R.id.nav_dev_info:
                 //TODO:
@@ -310,12 +345,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
-//    public void putFragment(int id, Fragment fragment){
-//        //TODO: решить проблему с накладыванием фрагмента!
-//        Fragment fragment = (Fragment) findViewById(R.id.fragment_main);
-//        getSupportFragmentManager().beginTransaction()
-//        getSupportFragmentManager().beginTransaction().replace(id, fragment).addToBackStack(null).commit();
-//
-//    }
+    public void OnCityChoose(String s) {
+        sharedPref.edit().putString(Constants.CITY_MESSAGE, s).apply();
+        toolbar.getMenu().getItem(0).setVisible(false);
+        navController.navigate(R.id.nav_weather);
+    }
+
+    @Override
+    public void onInternetConnectivityChanged(boolean isConnected) {
+        if(!isConnected) {
+            Intent intent = new Intent(Constants.ACTION_SEND_MSG);
+            //intent.setAction(ACTION_SEND_MSG);
+            intent.putExtra(Constants.BROADCAST_TITLE, "CONNECTIVITY LOST");
+            intent.putExtra(Constants.BROADCAST_MESSAGE, "Network connection is lost. Can't load weather data. Please, check your connectivity.");
+            Log.d(TAG, "CONNECTIVITY LOST");
+            intent.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
+            sendBroadcast(intent);
+        }
+    }
+
 
 }

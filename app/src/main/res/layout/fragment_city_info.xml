@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:gravity="center"
     android:orientation="vertical"
-    tools:context=".ui.cityInfoFragment">
+    tools:context=".ui.cityUI.CtyInfoFragment">
 
         <TextView
             android:id="@+id/city_info"

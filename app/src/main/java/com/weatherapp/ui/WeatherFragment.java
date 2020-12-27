@@ -17,6 +17,7 @@ import android.os.PersistableBundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,19 +30,18 @@ import com.weatherapp.model.SocialDataSource;
 import com.weatherapp.model.weatherData.ApiHolder;
 import com.weatherapp.model.weatherData.WeatherRequest;
 
+import java.util.Arrays;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link WeatherFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class WeatherFragment extends Fragment {
     private View rootView;
+    private MainActivity activity;
 
-    private String city;
+    private String city_name;
+    private TextView city;
     private TextView temperature;
     private TextView windSpeed;
     private TextView humidity;
@@ -57,6 +57,7 @@ public class WeatherFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_main, container, false);
+        activity = (MainActivity) getActivity();
         // RecyclerView
         // строим источник данных
         SocialDataSource sourceData = new MainSourceBuilder()
@@ -64,6 +65,9 @@ public class WeatherFragment extends Fragment {
                 .build();
         initRecyclerView(rootView, sourceData);
 
+        //String city = rootView.sharedPref.getString(Constants.CITY_MESSAGE, null);
+        requestRetrofit(activity.getSharedPref().getString(Constants.CITY_MESSAGE, "Moscow"), BuildConfig.WEATHER_API_KEY);
+        //activity.getSharedPref().getString(Constants.CITY_MESSAGE, "Moscow")
         // Inflate the layout for this fragment
         return rootView;
     }
@@ -71,9 +75,9 @@ public class WeatherFragment extends Fragment {
     private void initRecyclerView(View rootView, SocialDataSource sourceData){
         RecyclerView recyclerView = rootView.findViewById(R.id.recycler_view);
 
-        initGui();
 
-        requestRetrofit(city, BuildConfig.WEATHER_API_KEY);
+
+        requestRetrofit(city_name, BuildConfig.WEATHER_API_KEY);
 
         // Эта установка служит для повышения производительности системы
         recyclerView.setHasFixedSize(true);
@@ -94,8 +98,8 @@ public class WeatherFragment extends Fragment {
         recyclerView.setAdapter(adapter);
 
         //SharedPreferences sharedPref =
-        //String city = rootView.sharedPref.getString(Constants.CITY_MESSAGE, null);
-        requestRetrofit("Moscow", BuildConfig.WEATHER_API_KEY);
+
+
 
         if (Constants.DEBUG) {
             // Установим слушателя
@@ -111,6 +115,7 @@ public class WeatherFragment extends Fragment {
 
     // Инициализируем пользовательские элементы
     private void initGui() {
+        city = (TextView) rootView.findViewById(R.id.cityView);
         temperature = (TextView) rootView.findViewById(R.id.main_tempView);
         windSpeed = (TextView) rootView.findViewById(R.id.wind_info);
         humidity = (TextView) rootView.findViewById(R.id.humidity_info);
@@ -176,18 +181,21 @@ public class WeatherFragment extends Fragment {
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putInt("Temp", Integer.parseInt((String) temperature.getText()));
+        outState.putString("Temp", (String) temperature.getText());
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        //temperature.setText(savedInstanceState.getInt("Temp"));
+        initGui();
+        if (temperature == null) {
+            temperature.setText(savedInstanceState.getInt("Temp"));
+        }
+
     }
 
     public void setWeather(Response<WeatherRequest> response) {
-        //Toolbar city = rootView.findViewById(R.id.toolbar);
-        //city.setTitle(response.body().getName());
+        city.setText(response.body().getName());
         temperature.setText(String.format("%d + \"°\"", (int) response.body().getMain().getTemp()-273));
         pressure.setText(String.format(getString(R.string.pressure), response.body().getMain().getPressure()));
         humidity.setText(String.format(getString(R.string.humidity), response.body().getMain().getHumidity())+"%");
