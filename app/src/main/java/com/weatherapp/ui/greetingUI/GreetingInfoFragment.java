@@ -1,4 +1,4 @@
-package com.weatherapp.ui.cityUI;
+package com.weatherapp.ui.greetingUI;
 
 import android.os.Bundle;
 
@@ -13,7 +13,7 @@ import com.weatherapp.R;
 import com.weatherapp.model.Constants;
 
 
-public class CtyInfoFragment extends Fragment {
+public class GreetingInfoFragment extends Fragment {
 
 
     View view;

@@ -87,7 +87,7 @@
 
         <fragment
 
-            android:name="com.weatherapp.ui.cityUI.CtyInfoFragment"
+            android:name="com.weatherapp.ui.greetingUI.GreetingInfoFragment"
             android:layout_width="370dp"
             android:layout_height="match_parent">
 

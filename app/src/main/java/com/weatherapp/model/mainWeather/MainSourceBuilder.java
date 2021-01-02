@@ -1,4 +1,4 @@
-package com.weatherapp.model;
+package com.weatherapp.model.mainWeather;
 
 
 import android.content.res.Resources;
@@ -11,8 +11,8 @@ public class MainSourceBuilder {
         return this;
     }
 
-    public SocialDataSource build(){
-        MainSource socSourceMain = new MainSource(resources);
+    public WeatherDataSource build(){
+        MainWeatherSource socSourceMain = new MainWeatherSource(resources);
         socSourceMain.init();
         return socSourceMain;
     }

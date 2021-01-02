@@ -4,24 +4,35 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.view.ContextMenu;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.SearchView;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
+import android.widget.TextView;
+import android.widget.Toast;
 
-import com.google.android.material.snackbar.Snackbar;
 import com.weatherapp.R;
+import com.weatherapp.model.App;
 import com.weatherapp.model.Constants;
-import com.weatherapp.model.WeatherAdapter;
-import com.weatherapp.model.weatherData.City;
+import com.weatherapp.model.database.City;
+import com.weatherapp.model.database.CityDao;
+import com.weatherapp.model.database.CitySource;
 import com.weatherapp.ui.MainActivity;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 
 import static android.content.Context.MODE_PRIVATE;
@@ -34,11 +45,13 @@ public class CityFragment extends Fragment {
 
     private String[] listCity;
     private View rootView;
-    private MycityRecyclerViewAdapter adapter;
-    private SearchView searchView;
+
+    private AutoCompleteTextView actv;
     private SharedPreferences sharedPref;
 
     private RecyclerView listViewCity;
+    private MycityRecyclerViewAdapter adapter;
+    private CitySource citySource;
 
     // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
@@ -65,10 +78,23 @@ public class CityFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+    }
 
-        if (getArguments() != null) {
-            mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
+    @Override
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case Constants.CONTEXT_MENU_DELETE:
+                // Удаляем запись из базы
+                City cityForRemove = citySource
+                        .getCities()
+                        .get((int) adapter.getSelectedPosition());
+                citySource.removeCity(cityForRemove.getId());
+                adapter.notifyItemRemoved((int) adapter.getSelectedPosition());
+
+                return true;
         }
+
+        return super.onContextItemSelected(item);
     }
 
     @Override
@@ -81,45 +107,85 @@ public class CityFragment extends Fragment {
         sharedPref = activity.getSharedPreferences(getActivity().getPackageName(), MODE_PRIVATE);
 
         listViewCity = rootView.findViewById(R.id.ListViewCity);
-        listCity = getResources().getStringArray(R.array.cities);
         listViewCity.setHasFixedSize(true);
+        listCity = getResources().getStringArray(R.array.cities);
         listViewCity.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new MycityRecyclerViewAdapter(Arrays.asList(listCity));
+
+        CityDao cityDao = App
+                .getInstance()
+                .getCityDao();
+        citySource = new CitySource(cityDao);
+
+
+        adapter = new MycityRecyclerViewAdapter(citySource, activity);
         adapter.SetOnItemClickListener(new MycityRecyclerViewAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                searchView.setQuery("", false);
-                searchView.clearFocus();
-                searchView.setIconified(true);
-                activity.OnCityChoose(listCity[position]);
+                actv.clearFocus();
+                activity.OnCityChoose(citySource.getCities().get((int) adapter.getItemViewType(position)).getCityName());
             }
         });
         listViewCity.setAdapter(adapter);
+        actvSetup();
 
 
-        searchView = (SearchView) ((MainActivity)getActivity()).getToolbar().getMenu().findItem(R.id.app_bar_search).getActionView();
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+
+
+        return rootView;
+    }
+
+    private void addCityToHistory(String city) {
+        City cityForInsert = new City();
+        cityForInsert.setCityName(city);
+        // Добавляем студента
+        citySource.addCity(cityForInsert);
+        adapter.notifyDataSetChanged();
+
+    }
+
+
+    private void actvSetup() {
+        //actv = (AutoCompleteTextView) ((MainActivity)getActivity()).getToolbar().getMenu().findItem(R.id.autoCompleteTextView).getActionView();
+        actv = (AutoCompleteTextView) rootView.findViewById(R.id.autoCompleteTextView);
+
+
+        actv.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public boolean onQueryTextSubmit(String query) {
-                String searchingCity = query.trim();
-                if (Arrays.asList(listCity).contains(searchingCity)) {
-                    int i = Arrays.asList(listCity).indexOf(searchingCity);
-                    listViewCity.smoothScrollToPosition(i);
-                    adapter.setSelectedPosition(i);
-                    adapter.notifyDataSetChanged();
-                } else {
-                    Snackbar.make(rootView, "Город не найден!", Snackbar.LENGTH_LONG)
-                            .show();
-                }
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
+            public boolean onTouch(View v, MotionEvent event) {
+                actv.showDropDown();
+                actv.requestFocus();
                 return false;
             }
         });
-        return rootView;
+
+        String[] cities = getResources().getStringArray(R.array.cities);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(),
+                android.R.layout.simple_list_item_1, cities);
+        actv.setAdapter(adapter);
+        actv.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if ((event != null && (event.getKeyCode() == KeyEvent.KEYCODE_SEARCH))
+                        || (actionId == EditorInfo.IME_ACTION_SEARCH)) {
+                    if(Constants.DEBUG){
+                        Toast.makeText(getContext(), "Нажата кнопка SEARCH", Toast.LENGTH_SHORT).show();
+                    }
+                    InputMethodManager in = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    in.hideSoftInputFromWindow(actv.getApplicationWindowToken(),InputMethodManager.HIDE_NOT_ALWAYS);
+                    if(Arrays.asList(cities).contains(actv.getText().toString().trim())) {
+                        //TODO: check city for valid
+                        String chosen_city = actv.getText().toString().trim();
+                        addCityToHistory(chosen_city);
+                        activity.OnCityChoose(chosen_city);
+                    } else {
+                        Toast.makeText(getContext(), "Введен неверный город!", Toast.LENGTH_SHORT).show();
+                    }
+                    return true;
+
+                }
+                return false;
+            }
+        });
     }
 
 }

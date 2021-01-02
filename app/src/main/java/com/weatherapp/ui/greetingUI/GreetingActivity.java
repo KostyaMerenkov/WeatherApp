@@ -1,4 +1,4 @@
-package com.weatherapp.ui;
+package com.weatherapp.ui.greetingUI;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -24,7 +24,7 @@ import android.widget.Toast;
 
 import com.weatherapp.R;
 import com.weatherapp.model.Constants;
-import com.weatherapp.ui.cityUI.CtyInfoFragment;
+import com.weatherapp.ui.MainActivity;
 
 import java.util.Arrays;
 
@@ -177,7 +177,7 @@ public class GreetingActivity extends AppCompatActivity {
 
     public void putFragment(View view){
 
-            Fragment fragment = new CtyInfoFragment();
+            Fragment fragment = new GreetingInfoFragment();
             EditText editText = (EditText) findViewById(R.id.actv);
             Bundle bundle = new Bundle();
             bundle.putString(Constants.FRAGMENT_CITY, editText.getText().toString());

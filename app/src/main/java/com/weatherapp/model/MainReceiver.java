@@ -18,9 +18,10 @@ public class MainReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Toast.makeText(context, "Обнаружено сообщение: " +
-                        intent.getStringExtra(Constants.BROADCAST_MESSAGE),
-                Toast.LENGTH_LONG).show();
+        if (Constants.DEBUG) {
+            Log.d(TAG, "Обнаружено сообщение: " +
+                    intent.getStringExtra(Constants.BROADCAST_MESSAGE));
+        }
         // This method is called when the BroadcastReceiver is receiving
         // an Intent broadcast.
         // Получить параметр сообщения

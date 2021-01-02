@@ -33,7 +33,7 @@ public class SettingsActivity extends BaseActivity {
 
 
         setContentView(R.layout.settings_activity);
-        Snackbar.make(findViewById(R.id.settings), "Вы зашли в настройки" , Snackbar.LENGTH_LONG).show();
+        Snackbar.make(findViewById(R.id.settings), R.string.You_have_entered_settings , Snackbar.LENGTH_LONG).show();
 
         if (savedInstanceState == null) {
             getSupportFragmentManager()
@@ -66,7 +66,7 @@ public class SettingsActivity extends BaseActivity {
             setResult(RESULT_OK, intent);
         } else setResult(RESULT_CANCELED);
         finish();
-        super.onBackPressed();
+        //super.onBackPressed();
     }
 
     private static void setSetting(String key, boolean bool) {

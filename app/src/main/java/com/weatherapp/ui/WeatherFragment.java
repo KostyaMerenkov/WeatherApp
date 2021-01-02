@@ -1,36 +1,31 @@
 package com.weatherapp.ui;
 
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.os.PersistableBundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.weatherapp.BuildConfig;
 import com.weatherapp.R;
+import com.weatherapp.model.App;
 import com.weatherapp.model.Constants;
-import com.weatherapp.model.WeatherAdapter;
-import com.weatherapp.model.MainSourceBuilder;
-import com.weatherapp.model.SocialDataSource;
+import com.weatherapp.model.mainWeather.WeatherAdapter;
+import com.weatherapp.model.mainWeather.MainSourceBuilder;
+import com.weatherapp.model.mainWeather.WeatherDataSource;
 import com.weatherapp.model.weatherData.ApiHolder;
 import com.weatherapp.model.weatherData.WeatherRequest;
-
-import java.util.Arrays;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -48,6 +43,8 @@ public class WeatherFragment extends Fragment {
     private TextView pressure;
     private TextView clouds;
 
+
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,22 +54,24 @@ public class WeatherFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_main, container, false);
-        activity = (MainActivity) getActivity();
+
+
+
         // RecyclerView
         // строим источник данных
-        SocialDataSource sourceData = new MainSourceBuilder()
+        WeatherDataSource sourceData = new MainSourceBuilder()
                 .setResources(getResources())
                 .build();
         initRecyclerView(rootView, sourceData);
 
         //String city = rootView.sharedPref.getString(Constants.CITY_MESSAGE, null);
-        requestRetrofit(activity.getSharedPref().getString(Constants.CITY_MESSAGE, "Moscow"), BuildConfig.WEATHER_API_KEY);
+        requestRetrofit(((MainActivity) getActivity()).getSharedPref().getString(Constants.CITY_MESSAGE, "Moscow"), BuildConfig.WEATHER_API_KEY);
         //activity.getSharedPref().getString(Constants.CITY_MESSAGE, "Moscow")
         // Inflate the layout for this fragment
         return rootView;
     }
 
-    private void initRecyclerView(View rootView, SocialDataSource sourceData){
+    private void initRecyclerView(View rootView, WeatherDataSource sourceData){
         RecyclerView recyclerView = rootView.findViewById(R.id.recycler_view);
 
 
@@ -124,7 +123,7 @@ public class WeatherFragment extends Fragment {
     }
 
     private void requestRetrofit(String city, String keyApi) {
-        ApiHolder apiHolder = new ApiHolder();
+        ApiHolder apiHolder = App.getApiHolder();
         apiHolder.getOpenWeather().loadWeather(city, keyApi)
                 .enqueue(new Callback<WeatherRequest>() {
                     @Override
@@ -187,6 +186,7 @@ public class WeatherFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        activity = (MainActivity) getActivity();
         initGui();
         if (temperature == null) {
             temperature.setText(savedInstanceState.getInt("Temp"));

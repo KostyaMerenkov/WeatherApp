@@ -17,10 +17,8 @@ import androidx.navigation.ui.AppBarConfiguration;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.net.Uri;
@@ -37,9 +35,9 @@ import com.squareup.picasso.Picasso;
 import com.treebo.internetavailabilitychecker.InternetAvailabilityChecker;
 import com.treebo.internetavailabilitychecker.InternetConnectivityListener;
 import com.weatherapp.BuildConfig;
-import com.weatherapp.model.MainReceiver;
 import com.weatherapp.model.Constants;
 import com.weatherapp.R;
+import com.weatherapp.ui.greetingUI.GreetingActivity;
 import com.weatherapp.ui.settingsUI.SettingsActivity;
 
 import java.io.BufferedReader;
@@ -49,7 +47,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private final static String TAG = MainActivity.class.getSimpleName();
     //private BroadcastReceiver mainReceiver = new MainReceiver();
 
-    private InternetAvailabilityChecker mInternetAvailabilityChecker;
+    private InternetAvailabilityChecker internetAvailabilityChecker;
 
     private SharedPreferences sharedPref;
 
@@ -74,8 +72,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         //registerReceiver(mainReceiver, new IntentFilter(Constants.ACTION_SEND_MSG));
 
         InternetAvailabilityChecker.init(this);
-        mInternetAvailabilityChecker = InternetAvailabilityChecker.getInstance();
-        mInternetAvailabilityChecker.addInternetConnectivityListener(this);
+        internetAvailabilityChecker = InternetAvailabilityChecker.getInstance();
+        internetAvailabilityChecker.addInternetConnectivityListener(this);
 
         toolbar = initToolbar();
         initDrawer(toolbar);
@@ -86,7 +84,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
         //requestRetrofit(city, BuildConfig.WEATHER_API_KEY);
-        Snackbar.make(findViewById(R.id.main_layout), "Вы выбрали: " + city, Snackbar.LENGTH_LONG).show();
+        Snackbar.make(findViewById(R.id.main_layout), getString(R.string.You_chose) + city, Snackbar.LENGTH_LONG).show();
         navigationView = findViewById(R.id.nav_view);
 
         mAppBarConfiguration = new AppBarConfiguration.Builder(
@@ -111,9 +109,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         NotificationChannel channel = new NotificationChannel(Constants.BROADCAST_MAIN_CHANNEL, Constants.BROADCAST_MAIN_CHANNEL, NotificationManager.IMPORTANCE_LOW);
         notificationManager.createNotificationChannel(channel);
     }
-
-
-
 
     private void setMainFragment() {
         Bundle bundle = new Bundle();
@@ -169,7 +164,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             @Override
             public void onError(Exception e) {
-                Log.d(TAG, "IMAGE FAILED");
+                Log.v(TAG, "IMAGE FAILED");
             }
         });
     }
@@ -199,12 +194,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void savePreferences() {
         SharedPreferences.Editor editor = sharedPref.edit();
         //editor.putString("apiKey", editApiKey.getText().toString());
-        editor.commit();
+        //editor.commit();
     }
 
     // Загружаем настройки
     private void loadPreferences() {
-        String loadedApiKey = sharedPref.getString("apiKey", BuildConfig.WEATHER_API_KEY);
+        //String loadedApiKey = sharedPref.getString("apiKey", BuildConfig.WEATHER_API_KEY);
         //editApiKey.setText(loadedApiKey);
     }
 
@@ -326,7 +321,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
             case R.id.nav_choose:
                 navController.navigate(id);
-                toolbar.getMenu().getItem(0).setVisible(true);
+                //toolbar.getMenu().getItem(0).setVisible(true);
                 break;
             case R.id.nav_settings:
                 startSettings();
@@ -356,13 +351,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if(!isConnected) {
             Intent intent = new Intent(Constants.ACTION_SEND_MSG);
             //intent.setAction(ACTION_SEND_MSG);
-            intent.putExtra(Constants.BROADCAST_TITLE, "CONNECTIVITY LOST");
-            intent.putExtra(Constants.BROADCAST_MESSAGE, "Network connection is lost. Can't load weather data. Please, check your connectivity.");
-            Log.d(TAG, "CONNECTIVITY LOST");
-            intent.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
+            intent.putExtra(Constants.BROADCAST_TITLE, getString(R.string.Connectivity_lost));
+            intent.putExtra(Constants.BROADCAST_MESSAGE, getString(R.string.Connectivity_lost_message));
+            if (Constants.DEBUG) {
+                Log.v(TAG, "CONNECTIVITY LOST");
+            }
             sendBroadcast(intent);
         }
+        //Network connection is lost. Can't load weather data. Please, check your connectivity.
     }
-
-
 }

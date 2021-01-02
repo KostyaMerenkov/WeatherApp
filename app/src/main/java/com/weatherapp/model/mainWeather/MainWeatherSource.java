@@ -1,4 +1,4 @@
-package com.weatherapp.model;
+package com.weatherapp.model.mainWeather;
 
 import android.content.res.Resources;
 import android.content.res.TypedArray;
@@ -8,16 +8,16 @@ import com.weatherapp.R;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainSource implements SocialDataSource {
-    private List<MainSoc> dataSource;   // строим этот источник данных
+public class MainWeatherSource implements WeatherDataSource {
+    private List<MainWeatherSocket> dataSource;   // строим этот источник данных
     private Resources resources;    // ресурсы приложения
 
-    public MainSource(Resources resources) {
+    public MainWeatherSource(Resources resources) {
         dataSource = new ArrayList<>(6);
         this.resources = resources;
     }
 
-    public MainSource init(){
+    public MainWeatherSource init(){
         // строки описаний из ресурсов
         String[] dates = resources.getStringArray(R.array.rv_days);
         //строки температур
@@ -26,12 +26,12 @@ public class MainSource implements SocialDataSource {
         int[] pictures = getImageArray();
         // заполнение источника данных
         for (int i = 0; i < dates.length; i++) {
-            dataSource.add(new MainSoc(dates[i], pictures[i], temp[i]));
+            dataSource.add(new MainWeatherSocket(dates[i], pictures[i], temp[i]));
         }
         return this;
     }
 
-    public MainSoc getSoc(int position) {
+    public MainWeatherSocket getSoc(int position) {
         return dataSource.get(position);
     }
 

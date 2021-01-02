@@ -18,4 +18,5 @@ public class Constants {
     public static final String SETTINGS_CHANGED = "SETTINGS_CHANGED";
     public static final String TEMP_UNIT = "TEMP_UNIT";
 
+    public static final int CONTEXT_MENU_DELETE = 1;
 }

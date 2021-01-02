@@ -1,12 +1,12 @@
-package com.weatherapp.model;
+package com.weatherapp.model.mainWeather;
 
 // данные для карточки
-public class MainSoc {
+public class MainWeatherSocket {
     private String date; // дата
     private int picture;        // изображение
     private String temp;       // температура
 
-    public MainSoc(String date, int picture, String temp) {
+    public MainWeatherSocket(String date, int picture, String temp) {
         this.date = date;
         this.picture = picture;
         this.temp = temp;

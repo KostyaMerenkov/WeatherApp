@@ -1,4 +1,4 @@
-package com.weatherapp.model;
+package com.weatherapp.model.mainWeather;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,18 +11,19 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.weatherapp.R;
+import com.weatherapp.model.Constants;
 
 // Адаптер
 public class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.ViewHolder> {
 
-    private SocialDataSource dataSource;
+    private WeatherDataSource dataSource;
 
     private OnItemClickListener itemClickListener;  // Слушатель будет устанавливаться извне
 
 
     // Передаем в конструктор источник данных
     // В нашем случае это массив, но может быть и запросом к БД
-    public WeatherAdapter(SocialDataSource dataSource){
+    public WeatherAdapter(WeatherDataSource dataSource){
         this.dataSource = dataSource;
     }
 
@@ -53,7 +54,7 @@ public class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.ViewHold
     public void onBindViewHolder(@NonNull WeatherAdapter.ViewHolder viewHolder, int i) {
         // Получить элемент из источника данных (БД, интернет...)
         // Вынести на экран используя ViewHolder
-        MainSoc mainSoc = dataSource.getSoc(i);
+        MainWeatherSocket mainSoc = dataSource.getSoc(i);
         viewHolder.setData(mainSoc.getDate(), mainSoc.getPicture(), mainSoc.getTemp());
         if (Constants.DEBUG) {
             Log.d("SocnetAdapter", "onBindViewHolder");

@@ -98,5 +98,11 @@
     <string name="button_ok">Продолжить</string>
     <string name="Weather">Погода</string>
     <string name="Choose_city">Выберите город:</string>
+    <string name="Add_city">Введите город для добавления</string>
+    <string name="delete_item">Удалить</string>
+    <string name="Connectivity_lost">Связь с сервером потеряна</string>
+    <string name="Connectivity_lost_message">Невозможно подключиться к серверу. Проверьте интернет-соединение!</string>
+    <string name="You_chose">\"Вы выбрали: \"</string>
+    <string name="You_have_entered_settings">Вы зашли в настройки</string>
 
 </resources>
