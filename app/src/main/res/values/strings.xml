@@ -104,5 +104,8 @@
     <string name="Connectivity_lost_message">Невозможно подключиться к серверу. Проверьте интернет-соединение!</string>
     <string name="You_chose">\"Вы выбрали: \"</string>
     <string name="You_have_entered_settings">Вы зашли в настройки</string>
+    <string name="Current_location">Текущее местоположение</string>
+    <string name="Location_error">Не удалось определить местоположение</string>
+    <string name="Define_your_location">Определяем ваше местоположение!</string>
 
 </resources>

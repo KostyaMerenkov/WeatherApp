@@ -84,7 +84,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
         //requestRetrofit(city, BuildConfig.WEATHER_API_KEY);
-        Snackbar.make(findViewById(R.id.main_layout), getString(R.string.You_chose) + city, Snackbar.LENGTH_LONG).show();
+        Snackbar.make(findViewById(R.id.main_layout), getString(R.string.You_chose) + getSharedPref().getString(Constants.CITY_MESSAGE, "Moscow"), Snackbar.LENGTH_LONG).show();
         navigationView = findViewById(R.id.nav_view);
 
         mAppBarConfiguration = new AppBarConfiguration.Builder(
@@ -289,9 +289,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             Log.d(TAG, "Альбомная ориентация");
         }
     }
-
-
-
 
     public void getDateInfo(MenuItem item) {
         Uri address = Uri.parse("https://www.calend.ru/narod/");
