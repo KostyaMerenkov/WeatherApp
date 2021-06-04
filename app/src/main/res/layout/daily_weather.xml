@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:orientation="horizontal">
+
+    <TextView
+        android:id="@+id/textDate"
+        android:layout_width="@dimen/rv_datewidth"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="10dp"
+        android:gravity="center_vertical"
+        android:text="@string/rv_date"
+        android:textAlignment="textStart"
+        android:textSize="@dimen/dateItemList" />
+
+    <ImageView
+
+        android:id="@+id/rv_image"
+        android:layout_width="@dimen/rv_imagewidth"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:adjustViewBounds="true"
+        android:contentDescription="@string/weather_cloud"
+        android:cropToPadding="true"
+        app:srcCompat="@drawable/ic_cloudy" />
+
+    <TextView
+        android:id="@+id/textTemp"
+        android:layout_width="@dimen/rv_tempwidth"
+        android:layout_height="@dimen/rv_tempheight"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="@string/rv_temp"
+        android:textColor="#733838"
+        android:textSize="@dimen/tempItemList" />
+
+
+</LinearLayout>

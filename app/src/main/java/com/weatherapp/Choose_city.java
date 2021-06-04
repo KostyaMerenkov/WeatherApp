@@ -1,37 +1,57 @@
 package com.weatherapp;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
-import android.widget.MultiAutoCompleteTextView;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.Arrays;
-import java.util.List;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 public class Choose_city extends AppCompatActivity {
 
-    public final static String EXTRA_MESSAGE = "CITY";
     public final static String TAG = "CHOOSE_CITY";
-    private final static boolean DEBUG = true;
+    Boolean isExistChooseCityFragment = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_choose_city);
         AutoCompleteTextView editText = findViewById(R.id.actv);
+        editText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if ((event != null && (event.getKeyCode() == KeyEvent.KEYCODE_ENTER))
+                        || (actionId == EditorInfo.IME_ACTION_DONE)) {
+                    if(Constants.DEBUG){
+                        Toast.makeText(getApplicationContext(), "Нажата кнопка ENTER", Toast.LENGTH_SHORT).show();
+                    }
+                    InputMethodManager in = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    in.hideSoftInputFromWindow(editText.getApplicationWindowToken(),InputMethodManager.HIDE_NOT_ALWAYS);
+                    //putFragment(findViewById(R.id.actv));
+                    return true;
+
+                }
+                return false;
+            }
+        });
         editText.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -44,16 +64,17 @@ public class Choose_city extends AppCompatActivity {
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_list_item_1, cities);
         editText.setAdapter(adapter);
-        if (DEBUG) {
+        if (Constants.DEBUG) {
             Toast.makeText(getApplicationContext(), "onCreate()", Toast.LENGTH_SHORT).show();
             detectOrientation();
         }
     }
 
+
     @Override
     protected void onPause() {
         super.onPause();
-        if (DEBUG) {
+        if (Constants.DEBUG) {
             Toast.makeText(getApplicationContext(), "onPause()", Toast.LENGTH_SHORT).show();
             Log.d(TAG, "onPause()");
         }
@@ -62,7 +83,7 @@ public class Choose_city extends AppCompatActivity {
     @Override
     protected void onRestart() {
         super.onRestart();
-        if (DEBUG) {
+        if (Constants.DEBUG) {
             Toast.makeText(getApplicationContext(), "onRestart()", Toast.LENGTH_SHORT).show();
             Log.d(TAG, "onRestart()");
         }
@@ -71,7 +92,7 @@ public class Choose_city extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if (DEBUG) {
+        if (Constants.DEBUG) {
             Toast.makeText(getApplicationContext(), "onResume()", Toast.LENGTH_SHORT).show();
             Log.d(TAG, "onResume()");
         }
@@ -80,7 +101,7 @@ public class Choose_city extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (DEBUG) {
+        if (Constants.DEBUG) {
             Toast.makeText(getApplicationContext(), "onDestroy()", Toast.LENGTH_SHORT).show();
             Log.d(TAG, "onDestroy()");
         }
@@ -92,11 +113,16 @@ public class Choose_city extends AppCompatActivity {
         Intent intent = new Intent(this, MainActivity.class);
         // Получаем текстовое поле в текущей Activity
         EditText editText = (EditText) findViewById(R.id.actv);
-        // Получае текст данного текстового поля
+        // Получаем текст данного текстового поля
         String message = editText.getText().toString();
+        DateFormat df = new SimpleDateFormat("EEE, MMM d");
+        String date = df.format(Calendar.getInstance().getTime());
         // Добавляем с помощью свойства putExtra объект - первый параметр - ключ,
         // второй параметр - значение этого объекта
-        intent.putExtra(EXTRA_MESSAGE, message);
+        String temperature = "4";
+        intent.putExtra(Constants.DATE_MESSAGE, date);
+        intent.putExtra(Constants.CITY_MESSAGE, message);
+        intent.putExtra(Constants.TEMP_MESSAGE, temperature);
         // запуск activity
         startActivity(intent);
     }
@@ -112,5 +138,19 @@ public class Choose_city extends AppCompatActivity {
             Toast.makeText(appContext, "Альбомная ориентация", Toast.LENGTH_LONG).show();
             Log.d(TAG, "Альбомная ориентация");
         }
+    }
+
+    public void putFragment(View view){
+
+            Fragment fragment = new CityInfoFragment();
+            EditText editText = (EditText) findViewById(R.id.actv);
+            Bundle bundle = new Bundle();
+            bundle.putString(Constants.FRAGMENT_CITY, editText.getText().toString());
+            bundle.putString(Constants.FRAGMENT_TEMP, "+18°");
+            fragment.setArguments(bundle);
+            getSupportFragmentManager().beginTransaction().replace(R.id.fr_choose_info, fragment).commit();
+            isExistChooseCityFragment = true;
+
+
     }
 }
