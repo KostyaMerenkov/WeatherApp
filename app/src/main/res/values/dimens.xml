@@ -10,7 +10,7 @@
     <dimen name="info_w">114dp</dimen>
     <dimen name="info_h">21dp</dimen>
     <dimen name="rain_info_marginTop">16dp</dimen>
-    <dimen name="rain_info_text">14sp</dimen>
+    <dimen name="clouds_info_text">25sp</dimen>
     <dimen name="greeting_text">30sp</dimen>
     <dimen name="greeting_marginTop">100dp</dimen>
     <dimen name="fragment_city">25sp</dimen>
@@ -33,5 +33,17 @@
     <dimen name="tempHeight">100dp</dimen>
     <dimen name="temp_marginStart">45dp</dimen>
     <dimen name="temp_marginTop">10dp</dimen>
+    <dimen name="info_width">182dp</dimen>
+    <dimen name="info_height">25dp</dimen>
+    <dimen name="error_size">28sp</dimen>
+    <dimen name="error_width">328dp</dimen>
+    <dimen name="error_height">133dp</dimen>
+
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="nav_header_vertical_spacing">8dp</dimen>
+    <dimen name="nav_header_height">176dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
 
 </resources>

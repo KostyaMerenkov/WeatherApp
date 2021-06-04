@@ -2,7 +2,7 @@
     <!-- Main app -->
     <string name="app_name">WeatherApp</string>
     <string name="temperature">Температура</string>
-    <string name="rain_info">Информация о дожде</string>
+    <string name="clouds_info">Облачность</string>
     <string name="today_info">Информация</string>
     <string name="city">Город</string>
     <string name="greeting">Добро пожаловать!</string>
@@ -13,6 +13,12 @@
     <string name="select_city">Выберите город</string>
     <string name="button_date">Дата</string>
     <string name="background">bg</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
 
     <!-- Greeting app -->
     <string-array name="cities">
@@ -77,5 +83,29 @@
     <string name="black_mode">Полностью черный режим</string>
     <string name="dark_mode_summary_off">Если темная тема недостаточно темная</string>
     <string name="dark_mode_summary_on">Выключить абсолютно черный режим</string>
+    <string name="error_connecting">Ошибка подключения к серверу</string>
+    <string name="pressure">Атмосферное давление: %dмм</string>
+    <string name="humidity">Влажность: %d</string>
+    <string name="wind">Скорость ветра: %d м/c</string>
+
+
+    <string name="menu_home">Home</string>
+    <string name="menu_gallery">Gallery</string>
+    <string name="menu_slideshow">Slideshow</string>
+
+    <!-- Menu -->
+    <string name="menu_tools">Tools</string>
+    <string name="menu_share">Share</string>
+    <string name="menu_help">Помощь</string>
+    <string name="add">Add</string>
+    <string name="update">Update</string>
+    <string name="remove">Remove</string>
+    <string name="clear">Clear</string>
+    <string name="search">Search</string>
+    <string name="info">Информация</string>
+    <string name="menu_developer_info">Информация о разработчике</string>
+    <string name="menu_weather_now">Погода сейчас</string>
+    <string name="menu_choose_city">Выбрать город</string>
+    <string name="menu_settings">Настройки</string>
 
 </resources>

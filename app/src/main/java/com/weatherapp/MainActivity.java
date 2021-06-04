@@ -2,8 +2,11 @@ package com.weatherapp;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -12,7 +15,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.PersistableBundle;
 import android.util.Log;
 import android.view.Menu;
@@ -23,17 +28,41 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.gson.Gson;
+import com.weatherapp.weatherData.Clouds;
+import com.weatherapp.weatherData.Weather;
+import com.weatherapp.weatherData.WeatherRequest;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.stream.Collectors;
 
-public class MainActivity extends AppCompatActivity {
+import javax.net.ssl.HttpsURLConnection;
+
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     public final static String TAG = "MainApp";
-    private int temperature = 16;
     private TextView tempTextView;
+
+
+    private static final String WEATHER_URL = "https://api.openweathermap.org/data/2.5/weather?lat=55.75&lon=37.62&appid=";
+
+    private TextView city;
+    private TextView temperature;
+    private TextView windSpeed;
+    private TextView humidity;
+    private TextView pressure;
+    private TextView clouds;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,19 +70,14 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Intent intent = getIntent();
         String message = intent.getStringExtra(Constants.CITY_MESSAGE);
-        Snackbar.make(findViewById(R.id.main_tempView), "Вы выбрали: "+ message, Snackbar.LENGTH_LONG).show();
-
+        Snackbar.make(findViewById(R.id.constraintLayout), "Вы выбрали: " + message, Snackbar.LENGTH_LONG).show();
+        getWeather();
         String date = intent.getStringExtra(Constants.DATE_MESSAGE);
-        TextView city = (TextView) findViewById(R.id.city_textView);
-        TextView temperature = findViewById(R.id.main_tempView);
-        temperature.setText(intent.getStringExtra(Constants.TEMP_MESSAGE) + "°");
         Button date_button = findViewById(R.id.date_button);
         date_button.setText(date);
-        city.setText(message);
-        tempTextView = findViewById(R.id.city_textView);
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        Toolbar toolbar = initToolbar();
+        initDrawer(toolbar);
 
         //RecyclerView
         // строим источник данных
@@ -63,12 +87,92 @@ public class MainActivity extends AppCompatActivity {
         initRecyclerView(sourceData);
 
 
-
         if (Constants.DEBUG) {
             Toast.makeText(getApplicationContext(), "onCreate()", Toast.LENGTH_SHORT).show();
             detectOrientation();
         }
     }
+
+    private Toolbar initToolbar() {
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        return toolbar;
+    }
+
+    private void getWeather() {
+        Weather weather = new Weather();
+        try {
+            final URL uri = new URL(WEATHER_URL + BuildConfig.WEATHER_API_KEY);
+            final Handler handler = new Handler(); // Запоминаем основной поток
+            new Thread(new Runnable() {
+                public void run() {
+                    HttpsURLConnection urlConnection = null;
+                    try {
+                        urlConnection = (HttpsURLConnection) uri.openConnection();
+                        urlConnection.setRequestMethod("GET"); // установка метода получения данных -GET
+                        urlConnection.setReadTimeout(10000); // установка таймаута - 10 000 миллисекунд
+                        BufferedReader in = new BufferedReader(new InputStreamReader(urlConnection.getInputStream())); // читаем  данные в поток
+                        String result = getLines(in);
+                        // преобразование данных запроса в модель
+                        Gson gson = new Gson();
+                        final WeatherRequest weatherRequest = gson.fromJson(result, WeatherRequest.class);
+                        // Возвращаемся к основному потоку
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                setWeather(weatherRequest);
+                            }
+                        });
+                    } catch (Exception e) {
+                        Log.e(TAG, "Fail connection", e);
+                        setError();
+                        e.printStackTrace();
+                    } finally {
+                        if (null != urlConnection) {
+                            urlConnection.disconnect();
+                        }
+                    }
+                }
+            }).start();
+        } catch (MalformedURLException e) {
+            Log.e(TAG, "Fail URI", e);
+            e.printStackTrace();
+        }
+    }
+
+    private void setError() {
+        Snackbar.make(findViewById(R.id.main_tempView), "Ошибка подключения к серверу", Snackbar.LENGTH_LONG).show();
+    }
+
+    private void setWeather(WeatherRequest weatherRequest) {
+        temperature = (TextView) findViewById(R.id.main_tempView);
+        windSpeed = (TextView) findViewById(R.id.wind_info);
+        humidity = (TextView) findViewById(R.id.humidity_info);
+        pressure = (TextView) findViewById(R.id.pressure_info);
+        clouds = (TextView) findViewById(R.id.textView3);
+        Toolbar city = findViewById(R.id.toolbar);
+        city.setTitle(weatherRequest.getName());
+        temperature.setText(String.format("%d + \"°\"", (int) weatherRequest.getMain().getTemp()-273));
+        pressure.setText(String.format(getString(R.string.pressure), weatherRequest.getMain().getPressure()));
+        humidity.setText(String.format(getString(R.string.humidity), weatherRequest.getMain().getHumidity())+"%");
+        windSpeed.setText(String.format(getString(R.string.wind), weatherRequest.getWind().getSpeed()));
+        clouds.setText(weatherRequest.getWeather()[0].getDescription());
+    }
+
+    private void initDrawer(Toolbar toolbar) {
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
+        navigationView.setNavigationItemSelectedListener(this);
+    }
+
+    private String getLines(BufferedReader in) {
+        return in.lines().collect(Collectors.joining("\n"));
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -132,14 +236,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState, @NonNull PersistableBundle outPersistentState) {
         super.onSaveInstanceState(outState, outPersistentState);
-        outState.putInt("Temp", temperature);
+        outState.putInt("Temp", Integer.parseInt((String) temperature.getText()));
     }
 
     @Override
     public void onRestoreInstanceState(@Nullable Bundle savedInstanceState, @Nullable PersistableBundle persistentState) {
         super.onRestoreInstanceState(savedInstanceState, persistentState);
-        temperature = savedInstanceState.getInt("Temp");
-        tempTextView.setText(((Integer)temperature).toString());
+        temperature.setText(savedInstanceState.getInt("Temp"));
     }
 
     public void detectOrientation() {
@@ -188,6 +291,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
     public void date_info(View view) {
         Uri address = Uri.parse("https://www.calend.ru/narod/");
         Intent linkInet = new Intent(Intent.ACTION_VIEW, address);
@@ -199,5 +303,34 @@ public class MainActivity extends AppCompatActivity {
         // Создаем объект Intent для вызова новой Activity
         Intent intent = new Intent(this, SettingsActivity.class);
         startActivity(intent);
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+
+        switch (id) {
+            case R.id.nav_weather_now:
+                //TODO:
+                break;
+            case R.id.nav_choose_city:
+                Intent intent = new Intent(this, ChooseCityActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.nav_settings:
+                startSettings(this.tempTextView);
+                break;
+            case R.id.nav_dev_info:
+                //TODO:
+                break;
+            case R.id.nav_help:
+                //TODO:
+                break;
+
+        }
+
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
     }
 }

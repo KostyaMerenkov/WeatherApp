@@ -31,7 +31,7 @@ import java.util.Calendar;
 public class ChooseCityActivity extends AppCompatActivity {
 
     public final static String TAG = "CHOOSE_CITY";
-    Boolean isExistChooseCityFragment = false;
+    private Boolean isExistChooseCityFragment = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
