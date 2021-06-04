@@ -54,9 +54,28 @@
     </string-array>
 
     <array name="pictures">
-            <item>@drawable/ic_cloudy</item>
-            <item>@drawable/ic_day_clear</item>
-            <item>@drawable/ic_day_rain</item>
-        </array>
+        <item>@drawable/ic_cloudy</item>
+        <item>@drawable/ic_day_clear</item>
+        <item>@drawable/ic_day_rain</item>
+    </array>
+    <string name="title_activity_settings">Настройки</string>
+
+    <!-- Preference Titles -->
+    <string name="appearance_and_design">Вид и оформление</string>
+    <string name="main_settings">Основные</string>
+
+    <!-- Unit Preferences -->
+    <string name="celcius">Цельсий</string>
+    <string name="fahrenheit">Фаренгейт</string>
+
+    <!-- Sync Preferences -->
+
+    <string name="action_settings">Настройки</string>
+
+    <string name="units">Единицы измерения</string>
+    <string name="black_theme">Темная тема</string>
+    <string name="black_mode">Полностью черный режим</string>
+    <string name="dark_mode_summary_off">Если темная тема недостаточно темная</string>
+    <string name="dark_mode_summary_on">Выключить абсолютно черный режим</string>
 
 </resources>
