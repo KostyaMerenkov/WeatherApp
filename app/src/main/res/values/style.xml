@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <style name="Theme.WeatherApp.NoActionBar">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-    </style>
+<!--    <style name="Theme.WeatherApp.NoActionBar">-->
+<!--        <item name="windowActionBar">false</item>-->
+<!--        <item name="windowNoTitle">true</item>-->
+<!--    </style>-->
 
 
-    <style name="Theme.WeatherApp.AppBarOverlay" parent="ThemeOverlay.AppCompat.ActionBar" />
+<!--    <style name="Theme.WeatherApp.AppBarOverlay" parent="ThemeOverlay.AppCompat.ActionBar" />-->
 
-    <style name="Theme.WeatherApp.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" >
-        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
-    </style>
+<!--    <style name="Theme.WeatherApp.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" >-->
+<!--        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>-->
+<!--    </style>-->
 
 </resources>
