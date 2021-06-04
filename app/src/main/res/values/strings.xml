@@ -96,5 +96,16 @@
     <string name="button_no">Нет</string>
     <string name="city_not_found">Невозможно найти город!</string>
     <string name="button_ok">Продолжить</string>
+    <string name="Weather">Погода</string>
+    <string name="Choose_city">Выберите город:</string>
+    <string name="Add_city">Введите город для добавления</string>
+    <string name="delete_item">Удалить</string>
+    <string name="Connectivity_lost">Связь с сервером потеряна</string>
+    <string name="Connectivity_lost_message">Невозможно подключиться к серверу. Проверьте интернет-соединение!</string>
+    <string name="You_chose">\"Вы выбрали: \"</string>
+    <string name="You_have_entered_settings">Вы зашли в настройки</string>
+    <string name="Current_location">Текущее местоположение</string>
+    <string name="Location_error">Не удалось определить местоположение</string>
+    <string name="Define_your_location">Определяем ваше местоположение!</string>
 
 </resources>

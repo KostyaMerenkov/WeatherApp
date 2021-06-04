@@ -1,13 +1,15 @@
-<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <PreferenceCategory app:title="@string/main_settings">
 
         <ListPreference
-            app:defaultValue="true"
+            app:defaultValue="@string/celcius"
             app:entries="@array/units"
             app:entryValues="@array/units"
             app:key="units"
             app:title="@string/units"
+            android:defaultValue="@string/celcius"
             app:useSimpleSummaryProvider="true" />
 
     </PreferenceCategory>
@@ -15,6 +17,7 @@
     <PreferenceCategory app:title="@string/appearance_and_design">
 
         <SwitchPreferenceCompat
+
             app:key="dark_mode"
             app:title="@string/black_theme" />
 

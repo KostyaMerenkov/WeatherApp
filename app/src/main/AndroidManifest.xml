@@ -2,30 +2,41 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.weatherapp">
 
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
+        android:name=".model.App"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Menu">
-        <activity android:name=".BaseActivity"></activity>
+        android:theme="@style/WeatherAppNight">
+        <activity android:name=".model.BaseActivity" />
         <activity
-            android:name=".SettingsActivity"
-            android:label="@string/title_activity_settings"></activity>
-        <activity android:name=".ChooseCityActivity">
+            android:name=".ui.settingsUI.SettingsActivity"
+            android:label="@string/title_activity_settings" />
+        <activity android:name=".ui.greetingUI.GreetingActivity" />
+        <activity
+            android:name=".ui.MainActivity"
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".MainActivity"
-            android:label="@string/app_name"
-            android:theme="@style/Theme.Menu.NoActionBar"></activity>
+        <receiver
+            android:name=".model.MainReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.weatherapp.message" />
+            </intent-filter>
+
+        </receiver>
     </application>
 
 </manifest>

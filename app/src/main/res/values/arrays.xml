@@ -25,22 +25,4 @@
         <item><string name="Petropavlovsk-kamchatskiy">Петропавловск-Камчатский</string></item>
     </string-array>
 
-    <string-array name="city_ids">
-        <item><string name="Moscow_id">524901</string></item>
-        <item><string name="Saint-petersburg_id">2063518</string></item>
-        <item><string name="Novosibirsk_id">1496747</string></item>
-        <item><string name="Ekaterinburg_id">1486209</string></item>
-        <item><string name="Kazan_id">551487</string></item>
-        <item><string name="Nizhniy novgorod_id">520555</string></item>
-        <item><string name="Chelyabinsk_id">Chelyabinsk</string></item>
-        <item><string name="Omsk_id">1496153</string></item>
-        <item><string name="Rostov_id">501175</string></item>
-        <item><string name="Ufa_id">479561</string> </item>
-        <item><string name="Krasnoyarsk_id">1502026</string></item>
-        <item><string name="Voronezh_id">472041</string></item>
-        <item><string name="Perm'_id">511196</string></item>
-        <item><string name="Volgograd_id">472757</string></item>
-        <item><string name="Vladivostok_id">2013348</string></item>
-        <item><string name="Petropavlovsk-kamchatskiy_id">2125072</string></item>
-    </string-array>
 </resources>
