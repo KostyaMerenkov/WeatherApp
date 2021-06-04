@@ -13,6 +13,8 @@
     <dimen name="rain_info_text">14sp</dimen>
     <dimen name="greeting_text">30sp</dimen>
     <dimen name="greeting_marginTop">100dp</dimen>
+    <dimen name="fragment_city">25sp</dimen>
+    <dimen name="fragment_temp">75sp</dimen>
 
     <!-- Weather now -->
 
